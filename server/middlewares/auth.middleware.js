@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 
 export const authenticateToken = (req, res, next) => {
+
   try {
    const authHeader = req.headers.authorization;
 
@@ -16,6 +17,7 @@ export const authenticateToken = (req, res, next) => {
       token, 
       process.env.JWT_SECRET
     );
+
 
     req.user = decoded;
 

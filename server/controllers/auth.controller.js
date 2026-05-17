@@ -30,6 +30,7 @@ export const register = async (req, res) => {
       process.env.JWT_SECRET, 
       { expiresIn: '7d' }
     );
+    
 
     res.status(201).json({
       message: 'User registered successfully',
@@ -82,3 +83,21 @@ export const login = async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 };
+
+export const getMe = async(req, res) => {
+  try {
+    const user = await pool.query(
+      'SELECT id, name, email FROM users WHERE id = $1',
+      [req.user.id]
+    );
+
+    if (user.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json({ user: user.rows[0] });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+}
