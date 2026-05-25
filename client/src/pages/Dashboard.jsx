@@ -1,8 +1,10 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback , useRef} from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/sidebar'
 import NoteList from '../components/NoteList';
 import NoteForm from '../components/NoteForm';
+import Topbar from '../components/Topbar';
+import Bottombar from '../components/Bottombar';
 
 
 
@@ -13,10 +15,30 @@ const [showForm, setShowForm] = useState(false);
 const [selectedNote, setSelectedNote] = useState(null); // null = new note, note object = editing
 const [activeView, setActiveView] = useState('notes');
 const [user, setUser] = useState(null);
+const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 const token = localStorage.getItem('token');
 const navigate = useNavigate();
+ 
 
-  
+const selectedNoteRef = useRef(null);
+
+useEffect(() => {
+  selectedNoteRef.current = selectedNote;
+}, [selectedNote]);
+
+useEffect(() => {
+  if (notes.length === 0) return;
+
+  const isDesktop = window.innerWidth >= 768;
+  const hasSelection = selectedNoteRef.current !== null;
+
+  if (!hasSelection && isDesktop && !showForm) {
+    setSelectedNote(notes[0]);
+    setShowForm(true);
+    setActiveView('notes');
+  }
+}, [notes, showForm]);
+
 const getNotes = useCallback(async () => {
 
   if (!token) {
@@ -32,6 +54,8 @@ const getNotes = useCallback(async () => {
 
   const data = await res.json();
   setNotes(data.notes);
+
+
 }, [token, navigate]);
 
 useEffect(() => { 
@@ -48,7 +72,12 @@ const createNote =  useCallback(async(title, content) => {
     body: JSON.stringify({ title, content })
   });
   const data = await res.json();
+  
+
   setNotes(prevNotes => [...prevNotes, data.note]);
+  setSelectedNote(data.note);
+  await getNotes()
+
 },[token]);
 
 
@@ -77,6 +106,7 @@ const res = await fetch(`http://localhost:8080/api/notes/${id}`, {
 const data = await res.json();
   
  setNotes(prevNotes => prevNotes.map(note => note.id === id ? data.note : note));
+ setSelectedNote(data.note);
 }, [token]);
 
 const getUser = useCallback(async () => {
@@ -99,38 +129,62 @@ useEffect(() => {
 
   return (
     <div>
-      <div className="flex">
-        <div className="w-1/6">
-         <Sidebar getNotes={getNotes} setActiveView={setActiveView} activeView={activeView} user={user} />
-        </div>
-        <div className="w-2/8">
-          {activeView === 'notes' && 
-            <NoteList 
-              notes={notes} 
-              onDelete={deleteNote} 
-              onUpdate={updateNote} 
-              onSelectNote={(note) => {     
-              setSelectedNote(note);
-              setShowForm(true);
-              }}
-            />
-          }
-        </div>
-        <div className="w-3/6 h-screen">
+      <div className="flex flex-col h-screen pb-16 lg:pb-0">
+
+        <Topbar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} user={user} />
+
+        <div className="flex flex-1 overflow-hidden">
+          {/* side bar */}
+          <div className="hidden lg:block lg:basis-2/12 shrink-0">
+           <Sidebar getNotes={getNotes} setActiveView={setActiveView} activeView={activeView} user={user} setShowForm={setShowForm}  setSelectedNote={setSelectedNote}  />
+          </div>
+       
+
+         {/* note list */}
+          {activeView === 'notes' && ( 
+            <div className="shrink-0 w-full  lg:w-4/12 transition-all duration-300">
+              <NoteList 
+                notes={notes} 
+                onDelete={deleteNote} 
+                onUpdate={updateNote} 
+                onSelectNote={(note) => {     
+                setSelectedNote(note);
+                setShowForm(true);
+                  if(window.innerWidth < 1024) {
+                    setActiveView(null);
+                  } else{
+                    setActiveView('notes');
+                  }
+                }}
+              />
+            </div>
+          )}
+         
+
+
+
+         {/* note form */}
           {showForm && (
-            <NoteForm
-              selectedNote={selectedNote}    
-              onCreate={createNote}
-              onUpdate={updateNote}
-              onDelete={deleteNote}
-              onClose={() => {               
-                setShowForm(false);
-                setSelectedNote(null);
-              }}
-            />
-         )}
+            <div className='flex-1 min-w-0 transition-all duration-300'>
+              <NoteForm
+                selectedNote={selectedNote}    
+                onCreate={createNote}
+                onUpdate={updateNote}
+                onDelete={deleteNote}
+                onClose={() => {               
+                  setShowForm(false);
+                  setSelectedNote(null);
+                  if (window.innerWidth < 1024) {
+                    setActiveView('notes');
+                  }
+                }}
+              />
+            </div>
+          )}
         </div>
-          
+
+        <Bottombar getNotes={getNotes} setActiveView={setActiveView} activeView={activeView}  setShowForm={setShowForm}  setSelectedNote={setSelectedNote} />
+        
       </div>
     </div>
   )

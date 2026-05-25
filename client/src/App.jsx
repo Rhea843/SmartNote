@@ -8,7 +8,7 @@ import Dashboard from './pages/Dashboard';
 
 function App() {
   return (
-    <div className='bg-[#E0E1DD] min-h-screen'>
+    <div className='bg-[#fafafa] min-h-screen'>
       
      <Routes>
         <Route path="/" element={<Hero />} />

@@ -6,6 +6,7 @@ import { MdContentCopy } from "react-icons/md";
 import { RiExpandDiagonalLine } from "react-icons/ri";
 import { FaFolderPlus } from "react-icons/fa";
 import { MdOutlineDelete } from "react-icons/md";
+import { IoArrowBack } from "react-icons/io5";
 
 const NoteForm = ({ selectedNote, onCreate, onUpdate, onDelete, onClose }) => {
 const [title, setTitle] = useState(selectedNote?.title || '')
@@ -13,15 +14,24 @@ const [content, setContent] = useState(selectedNote?.content || '')
 const [activeMenu, setActiveMenu] = useState(null);
 const [currentDate, setCurrentDate] = useState(new Date());
 const formRef = useRef(null)
-
-
+const titleRef = useRef(title);
+const contentRef = useRef(content);
+ 
+{/* click outside handler */}
 useEffect(() => {
-  const handleClickOutside = (event) => {
+  const handleClickOutside = async (event) => {
+
+    if (event.target.closest('[data-no-close]')) return;
+    
     if (formRef.current && !formRef.current.contains(event.target)) {
+        const latestTitle = titleRef.current;
+        const latestContent = contentRef.current;
+
+
       if (selectedNote) {
-        onUpdate(selectedNote.id, title, content);
+       await onUpdate(selectedNote.id, latestTitle, latestContent);
       } else {
-       if (title || content) onCreate(title, content);
+       if (latestTitle || latestContent) await onCreate(latestTitle, latestContent);
       }
 
       onClose();
@@ -30,64 +40,98 @@ useEffect(() => {
   }
 
   document.addEventListener('mousedown', handleClickOutside);
+
    return () => document.removeEventListener('mousedown', handleClickOutside);
-}, [title, content, onClose, onCreate, onUpdate, onDelete, selectedNote]);
+}, [selectedNote, onCreate, onUpdate, onClose]);
 
+{/* clock timer */}
+
+useEffect(() => {
+const timer = setInterval(() => {
+  setCurrentDate(new Date());
+}, 1000);  
+
+return () => clearInterval(timer); 
+}, []);
+
+{/* sync refs when title/content change */}
+useEffect(() => {
+titleRef.current = title;
+contentRef.current = content;
+}, [title, content]);
+
+
+{/* sync form when selectedNote changes */}
+useEffect(() => {
+  setTitle(selectedNote?.title || '');
+  setContent(selectedNote?.content || '');
+  titleRef.current = selectedNote?.title || '';
+  contentRef.current = selectedNote?.content || '';
+}, [selectedNote])
   
-  useEffect(() => {
-  const timer = setInterval(() => {
-    setCurrentDate(new Date());
-  }, 1000);  
 
-  return () => clearInterval(timer); 
- }, []);
 
- const formatDate = (date) => {
-  return date.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
- };
- 
+const formatDate = (date) => {
+return date.toLocaleDateString('en-US', {
+  month: 'short',
+  day: 'numeric',
+  year: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit'
+});
+};
+
+
+
 
   return (
-    <div ref={formRef}  className='flex flex-col justify-center item-center p-4 relative'>
-      <div className='absolute top-6 left-190 bg-[#3A506A] p-2 rounded-full w-10 h-10'>
+    <div ref={formRef}  className='flex flex-col p-4 relative w-full h-full'>
+      <div className='absolute top-4 lg:right-10 right-6 bg-[#3A506A] p-2 rounded-full w-10 h-10'>
         <button 
           onClick={(e) => {
             e.stopPropagation();
-            setActiveMenu(activeMenu === 'form' ? null : 'form');
+            setActiveMenu(activeMenu === 'form' ? null : 'form')
           }}
         >
          <MdMoreHoriz  className="text-2xl"/>
         </button>
         
       </div>
-     <p className="text-sm text-gray-400 text-center mt-2">
-       {selectedNote ? formatDate(new Date(selectedNote.updated_at)) : formatDate(currentDate)}
-     </p>
+
+      <button 
+          onClick={onClose}
+           className="lg:hidden absolute top-4 md:left-8 left-4 text-2xl" 
+        >
+          <IoArrowBack />
+        </button>
+
+
+      <div className='flex flex-col items-center w-full mt-8 px-4'>
+       <p className="text-sm text-gray-400 mt-6">
+          {selectedNote ? formatDate(new Date(selectedNote.updated_at)) : formatDate(currentDate)}
+       </p>
       
-      <input
-        type="text"
-        placeholder="Title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        className='text-2xl font-semibold text-center mt-12 focus:outline-none'
-      />
-        
-      <textarea
-        placeholder="Write your note here..."
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        rows={27}
-        className="resize-none mt-4 focus:outline-none w-full"
-      />
+     
+      
+        <input
+          type="text"
+          placeholder="Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          className='text-2xl text-center font-semibold mt-6 focus:outline-none w-full'
+        />
+          
+        <textarea
+          placeholder="Write your note here..."
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          rows={27}
+          className="resize-none mt-4 focus:outline-none w-full p-4"
+        />
+     </div> 
 
      {activeMenu === 'form' && (
-          <div className='bg-[#3A506A] rounded-lg shadow-full text-[#1A1B25] absolute top-20 -right-16 w-48 z-50 flex flex-col'>
+          <div className='bg-[#3A506A] rounded-lg shadow-[[0_4px_14px_rgba(45,91,227,0.25)]] text-[#1A1B25] absolute top-15 lg:right-15 right-9  w-48 z-50 flex flex-col'>
             <button className='flex items-center gap-2 px-3 py-3 border-b border-gray-500 w-full'>
               <MdFavoriteBorder className='text-xl'/>
               <p>Add to Favorites</p>

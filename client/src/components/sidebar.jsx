@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from "react-router-dom";
 import { createPortal } from "react-dom";
-import { RxHamburgerMenu } from "react-icons/rx";
 import { PiNotepad } from "react-icons/pi";
 import { MdFavoriteBorder } from "react-icons/md";
 import { FaRegClock } from "react-icons/fa6";
@@ -28,81 +27,76 @@ const Sidebar = ({ getNotes, setActiveView, activeView, user}) => {
   }
 
   return (
-    <div className="h-screen p-4 bg-[#778DA9] relative">
-      
-      <div className="flex items-center justify-start gap-2">
-        <RxHamburgerMenu className="text-2xl" />
-        <h1 className="app-title text-xl ">SmartyNote</h1>
-      </div>
-        
-        
+    <div data-no-close="true"  className="h-screen p-4 bg-[#1E2533] relative border-r border-gray-400">
       {/* nav links */}
       <div>
-        <ul className="p-2 mt-6">
-          <li className={`flex items-center gap-2 ${activeView === 'notes' ? 'font-bold' : ''}`}>
-            <PiNotepad className="text-[24px]" />
-            <button onClick={handleAllNotes} className='text-[18px]'>
+        <ul className="p-2 mt-6 text-[#fafafa] tracking-tight">
+          <li className={`flex items-center gap-2 ${activeView === 'notes' ? 'font-bold  text-[#2d5be3]' : ''}`}>
+            <PiNotepad size={18}/>
+            <button onClick={handleAllNotes} className='text-xs uppercase tracking-wide'>
               All Notes
             </button>
           </li>
-          <li className="flex items-center gap-2 mt-10">
-            <MdFavoriteBorder className="text-[24px]" />
-            <Link to="#" className="text-[18px]">Favorites</Link>
+          <li className="flex items-center gap-2 mt-10  text-gray-400 hover:text-gray-200">
+            <MdFavoriteBorder size={18} />
+            <Link to="#" className="text-xs uppercase tracking-wide">Favorites</Link>
           </li>
-          <li className="flex items-center gap-2 mt-10">
-            <FaRegClock className="text-[20px]" />
-            <Link to="#" className="text-[18px]">Recent Notes</Link>
+          <li className="flex items-center gap-2 mt-10  text-gray-400 hover:text-gray-200">
+            <FaRegClock size={18} />
+            <Link to="#" className="text-xs uppercase tracking-wide">Recent Notes</Link>
           </li>
-          <li className="flex items-center gap-2 mt-10">
-            <IoFolderOutline className="text-[24px]" />
-            <Link to="#" className="text-[18px]">Folders</Link>
+          <li className="flex items-center gap-2 mt-10  text-gray-400 hover:text-gray-200">
+            <IoFolderOutline size={18} />
+            <Link to="#" className="text-xs uppercase tracking-wide">Folders</Link>
           </li>
-          <li className="flex items-center gap-2 mt-10">
-            <IoPricetagsOutline className="text-[24px]" />
-            <Link to="#" className="text-[18px]">Tags</Link>
+          <li className="flex items-center gap-2 mt-10  text-gray-400 hover:text-gray-200">
+            <IoPricetagsOutline size={18} />
+            <Link to="#" className="text-xs uppercase tracking-wide">Tags</Link>
           </li>
-          <li className="flex items-center gap-2 mt-10">
-            <BsTrash3 className="text-[24px]" />
-            <Link to="#" className="text-[18px]">Trash</Link>
+          <li className="flex items-center gap-2 mt-10 text-gray-400 hover:text-gray-200">
+            <BsTrash3 size={18} />
+            <Link to="#" className="text-xs uppercase tracking-wide">Trash</Link>
           </li>
         </ul>
      </div>
 
       {/* user profile */}
-      <div className="flex items-center justify-center gap-1 absolute bottom-10">
-        <div className="bg-[#778DA9] text-[#1A1B25] text-xl rounded-full w-10 h-10 border border-[#1B263B]/80 flex items-center justify-center font-semibold flex">
+      <div className="lg:flex items-center justify-center gap-1 absolute bottom-19 hidden ">
+        <div className="bg-[#fafafa] text-gray-400 text-xl rounded-full w-10 h-10 border border-[#1B263B]/80 flex items-center justify-center font-semibold">
           {user?.name?.charAt(0).toUpperCase()}
         </div>
       
         <div>
           <div className="flex items-center">
-           <p className="text-[#1A1B25] text-[16px] font-semibold">{user?.name}</p>
+           <p className="text-gray-400 text-xs uppercase font-semibold -mt-1">{user?.name}</p>
            <button onClick={() => setShowMenu(!showMenu)}>
-            <MdExpandMore className={`text-[24px] cursor-pointer transition-transform duration-200 ${showMenu ? 'rotate-180' : 'rotate-0'}`}  />
-          </button>
+            <MdExpandMore className={`text-[24px] text-gray-400 -mt-2 cursor-pointer transition-transform duration-200 ${showMenu ? 'rotate-180' : 'rotate-0'}`}  />
+           </button>
           </div>
-         <p className="text-[#1A1B25]/80 text-[12px]">{user?.email}</p>
+         <p className="text-gray-400 text-xs tracking-tight">{user?.email}</p>
         </div>
 
-
-        {/* dropdown menu */}
-        {showMenu && (
-          <div className=" rounded-lg bg-[#3A506A] shadow-full text-[#1A1B25] absolute bottom-9 left-25 p-3 border border-[#1B263B]/80">
-            <button
-             onClick={() => {
-                setShowLogoutModal(true);
-                setShowMenu(false);
-              }}
-            >
-              <div className='flex items-center gap-1'>
-               <MdLogout /> 
-               <p>Logout</p>
-              </div>
-            </button>
-            
-          </div>
-        )}
       </div>
+
+
+      {/* dropdown menu */}
+      {showMenu && (
+        <div className=" rounded-lg bg-[#3A506A] shadow-full text-[#1A1B25] absolute bottom-29 left-30 p-3 border border-[#1B263B]/80 z-50">
+          <button
+            onClick={() => {
+              setShowLogoutModal(true);
+              setShowMenu(false);
+            }}
+          >
+            <div className='flex items-center gap-1'>
+              <MdLogout /> 
+              <p>Logout</p>
+            </div>
+          </button>
+          
+        </div>
+      )}
+     
 
       
       {/* logout */}
