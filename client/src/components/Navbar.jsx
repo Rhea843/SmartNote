@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { RxHamburgerMenu } from "react-icons/rx";
 import { IoMdClose } from "react-icons/io";
+import { motion } from "framer-motion"
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -10,16 +11,12 @@ const Navbar = () => {
    <div className='relative'>
       <div className='flex items-center justify-between p-4 '>
 
-        <div className='hidden md:flex items-center justify-center gap-7'>
+        <div className='hidden md:block'>
           <h1 className='app-title hidden text-2xl md:block font-semibold text-[#1E2533]'>SmartyNote</h1>
-          <nav className='hidden gap-5 p-1 md:flex'>
-            <Link to="/" className='font-semibold text-[#1A1B25]'>Home</Link>
-            <Link to="#" className='text-[#1A1B25]/45 '>Features</Link>
-            <Link to="#" className='text-[#1A1B25]/45'>About us</Link>
-          </nav>
         </div>
 
         <div className='lg:hidden flex items-center justify-center gap-3'>
+
           <button
             className='md:hidden text-2xl'
             onClick={() => setIsMenuOpen(true)}
@@ -29,10 +26,22 @@ const Navbar = () => {
 
           <h1 className='app-title md:hidden text-2xl  font-semibold text-[#0D1B2A]'>SmartyNote</h1>
         </div>
+        <div className='flex justify-between items-center gap-7'>
 
-        <button className='bg-[#1E2533] px-4.5 py-1.5 rounded-[5px]'>
-          <Link to="/login" className='font-semibold text-[#fafafa]'>Login</Link>
-        </button>
+         <nav className='hidden gap-5 p-1 md:flex'>
+            <Link to="/" className='font-semibold text-[#1A1B25]'>Home</Link>
+            <Link to="#" className='text-[#1A1B25]/45 '>Features</Link>
+            <Link to="#" className='text-[#1A1B25]/45'>About us</Link>
+          </nav>
+
+          <motion.button
+           whileHover={{ scale: 1.12 }}
+           whileTap={{ scale: 0.95 }} className='bg-[#1E2533] px-4.5 py-1.5 rounded-[5px]'>
+            <Link to="/login" className='font-semibold text-[#fafafa]'>Login</Link>
+          </motion.button>
+        </div>
+
+        
      </div>
 
       {isMenuOpen && (

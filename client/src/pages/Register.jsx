@@ -1,6 +1,59 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
   
+const TypeWriterText = ({ text, delay = 0}) => {
+  const [displayText, setDisplayText] = useState('');
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [started, setStarted] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false); 
+
+  useEffect(() => {
+    const startTimeout = setTimeout(() => {
+      setStarted(true);
+    }, delay);
+    return () => clearTimeout(startTimeout);
+  }, [delay]);
+
+  useEffect(() => {
+    if(!started) return;
+
+    if (!isDeleting && currentIndex < text.length) {
+     const timeout = setTimeout(() => {
+       setDisplayText(prev => prev + text[currentIndex]);
+       setCurrentIndex(prev => prev + 1);
+     }, 80);
+     return () => clearTimeout(timeout);
+    }
+
+    if (!isDeleting && currentIndex === text.length) {
+     const timeout = setTimeout(() => {
+       setIsDeleting(true);
+      }, 2000);
+     return () => clearTimeout(timeout);
+    }
+
+
+    if (isDeleting && displayText.length > 0) {
+      const timeout = setTimeout(() => {
+       setDisplayText(prev => prev.slice(0, -1));
+      }, 50);
+      return () => clearTimeout(timeout);
+    }
+
+
+    if (isDeleting && displayText.length === 0) {
+     setIsDeleting(false);
+     setCurrentIndex(0);
+    }
+  }, [currentIndex, text, started, isDeleting, displayText]);
+
+    return (
+      <span>
+        {displayText} 
+     </span>
+   );
+};
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -61,8 +114,17 @@ const Register = () => {
         }}
       >
         <div className='flex flex-col items-center justify-center'>
-          <h1 className='app-title text-4xl text-[#fafafa] font-bold mb-4'>Smarty<span className='text-[#778DA9]'>N</span>otes</h1>
-          <p className='text-[#fafafa] text-sm'>Your intelligent note-taking <span className='text-[#778DA9]'>companion</span></p>
+          <h1 className='app-title text-4xl text-[#fafafa] font-bold mb-4'>Smarty<span className='text-[#778DA9]'>N</span>
+            <TypeWriterText text="otes" delay={60} />
+          </h1>
+          <motion.p 
+            initial={{ opacity: 0, y: 60 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2  }}
+              className='text-[#fafafa] text-sm'
+          >Your intelligent note-taking 
+            <span className='text-[#778DA9]'> companion</span>
+          </motion.p>
         </div>
      </div>
 
@@ -75,8 +137,17 @@ const Register = () => {
         }}
       >
         <div className='flex flex-col items-center justify-center py-83'>
-          <h1 className='app-title text-4xl text-[#fafafa] font-bold mb-2'>Smarty<span className='text-[#778DA9]'>N</span>otes</h1>
-          <p className='text-[#fafafa] text-sm'>Your intelligent note-taking <span className='text-[#778DA9]'>companion</span></p>
+         <h1 className='app-title text-5xl text-[#fafafa] font-bold mb-2'>Smarty<span className='text-[#778DA9]'>N</span>
+            <TypeWriterText text="otes" delay={260} />
+          </h1>
+          <motion.p 
+          initial={{ opacity: 0, y: 60 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2  }}
+            className='text-[#fafafa] text-sm'
+          >Your intelligent note-taking 
+          <span className='text-[#778DA9]'> companion</span>
+          </motion.p>
         </div>
         
       </div>
