@@ -5,6 +5,7 @@ import NoteList from '../components/NoteList';
 import NoteForm from '../components/NoteForm';
 import Topbar from '../components/Topbar';
 import Bottombar from '../components/Bottombar';
+import ArchivedNotes from '../components/ArchivedNotes.jsx';
 
 
 
@@ -21,6 +22,7 @@ const navigate = useNavigate();
  
 
 const selectedNoteRef = useRef(null);
+const sortedNotes = [...notes].sort((a,b) => b.is_pinned - a.is_pinned);
 
 useEffect(() => {
   selectedNoteRef.current = selectedNote;
@@ -127,6 +129,57 @@ useEffect(() => {
   getUser();
 }, [getNotes, getUser]);
 
+const togglePin = async (id) => {
+  try{
+
+    const token = localStorage.getItem('token');
+
+    const res = await fetch(
+      `http://localhost:8080/api/notes/${id}/pin`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      }
+    );
+
+    const updatedNote = await res.json();
+
+    setNotes(prevNotes => 
+      prevNotes.map(note =>
+        note.id === id ? updatedNote : note
+      )
+    );
+  } catch (error){
+    console.log(error);
+  }
+}
+
+const toggleArchive = async (id) => {
+  try{
+    const token = localStorage.getItem('token');
+
+    const res = await fetch(
+      `http://localhost:8080/api/notes/${id}/archive`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      }
+    );
+
+    const updatedNote = await res.json();
+
+    setNotes(prev => prev.map(note => note.id === id ? updatedNote : note));
+  } catch (error){
+    console.log(error);
+  }
+};
+
+console.log('archived notes:', notes.filter(note => note.is_archived))
+
   return (
     <div>
       <div className="flex flex-col h-screen pb-16 lg:pb-0">
@@ -141,12 +194,17 @@ useEffect(() => {
        
 
          {/* note list */}
-          {activeView === 'notes' && ( 
-            <div className="shrink-0 w-full  lg:w-4/12 transition-all duration-300">
+          
+          {(activeView === 'notes' || activeView === 'archived') && (
+            <div className="shrink-0 w-full  lg:w-4/12 transition-all duration-300"> 
+            {activeView === 'notes' &&
+              
               <NoteList 
-                notes={notes} 
+                notes={sortedNotes.filter(note => !note.is_archived)} 
                 onDelete={deleteNote} 
                 onUpdate={updateNote} 
+                onTogglePin={togglePin}
+                onToggleArchive={toggleArchive}
                 onSelectNote={(note) => {     
                 setSelectedNote(note);
                 setShowForm(true);
@@ -157,20 +215,39 @@ useEffect(() => {
                   }
                 }}
               />
+            }
+              
+
+            {activeView === 'archived' &&
+              <ArchivedNotes
+                notes={notes.filter(note => note.is_archived)} 
+                onDelete={deleteNote} 
+                onUpdate={updateNote} 
+                onUnarchive={toggleArchive}
+                onSelectNote={(note) => {     
+                setSelectedNote(note);
+                setShowForm(true);
+                  if(window.innerWidth < 1024) {
+                    setActiveView(null);
+                  } else{
+                    setActiveView('archived');
+                  }
+                }}
+              />
+            }
             </div>
+          
           )}
-         
-
-
-
+          
          {/* note form */}
           {showForm && (
-            <div className='flex-1 min-w-0 transition-all duration-300'>
+            <div className={`min-w-0 transition-all duration-300 ${activeView === 'notes' || activeView === 'archived' ? 'flex-1' : 'w-full'}`}>
               <NoteForm
                 selectedNote={selectedNote}    
                 onCreate={createNote}
                 onUpdate={updateNote}
                 onDelete={deleteNote}
+                onToggleArchive={toggleArchive}
                 onClose={() => {               
                   setShowForm(false);
                   setSelectedNote(null);

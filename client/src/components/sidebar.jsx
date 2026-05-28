@@ -1,19 +1,22 @@
-import { useState } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import { Link, useNavigate } from "react-router-dom";
 import { createPortal } from "react-dom";
 import { PiNotepad } from "react-icons/pi";
-import { MdFavoriteBorder } from "react-icons/md";
-import { FaRegClock } from "react-icons/fa6";
-import { IoFolderOutline } from "react-icons/io5";
+import { FiArchive } from "react-icons/fi";
 import { IoPricetagsOutline } from "react-icons/io5";
 import { BsTrash3 } from "react-icons/bs";
 import { MdExpandMore } from "react-icons/md";
 import { MdLogout } from "react-icons/md";
+import useClickOutside from '../hooks/useClickOutside';
 
 const Sidebar = ({ getNotes, setActiveView, activeView, user}) => {
   const [showMenu, setShowMenu] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const navigate = useNavigate()
+
+  const dropdownRef = useRef(null);
+  const closeDropdown = useCallback(() => setShowMenu(false), []);
+  useClickOutside(dropdownRef, closeDropdown);
 
 
  const handleAllNotes = () => {
@@ -37,23 +40,17 @@ const Sidebar = ({ getNotes, setActiveView, activeView, user}) => {
               All Notes
             </button>
           </li>
-          <li className="flex items-center gap-2 mt-10  text-gray-400 hover:text-gray-200">
-            <MdFavoriteBorder size={18} />
-            <Link to="#" className="text-xs uppercase tracking-wide">Favorites</Link>
+          <li className={`flex items-center gap-2 mt-10 ${activeView === 'archived' ? 'font-bold  text-[#2d5be3]' : ''}`}>
+            <FiArchive size={18} />
+            <button onClick={() => setActiveView('archived')} className='text-xs uppercase tracking-wide'>
+              Archive
+            </button>
           </li>
-          <li className="flex items-center gap-2 mt-10  text-gray-400 hover:text-gray-200">
-            <FaRegClock size={18} />
-            <Link to="#" className="text-xs uppercase tracking-wide">Recent Notes</Link>
-          </li>
-          <li className="flex items-center gap-2 mt-10  text-gray-400 hover:text-gray-200">
-            <IoFolderOutline size={18} />
-            <Link to="#" className="text-xs uppercase tracking-wide">Folders</Link>
-          </li>
-          <li className="flex items-center gap-2 mt-10  text-gray-400 hover:text-gray-200">
+          <li className={`flex items-center gap-2 mt-10 ${activeView === 'tags' ? 'font-bold  text-[#2d5be3]' : ''}`}  >
             <IoPricetagsOutline size={18} />
-            <Link to="#" className="text-xs uppercase tracking-wide">Tags</Link>
+            <Link to="#" className="text-xs uppercase tracking-wide">Tag</Link>
           </li>
-          <li className="flex items-center gap-2 mt-10 text-gray-400 hover:text-gray-200">
+          <li className={`flex items-center gap-2 mt-10 ${activeView === 'trash' ? 'font-bold  text-[#2d5be3]' : ''}`}  >
             <BsTrash3 size={18} />
             <Link to="#" className="text-xs uppercase tracking-wide">Trash</Link>
           </li>
@@ -81,7 +78,7 @@ const Sidebar = ({ getNotes, setActiveView, activeView, user}) => {
 
       {/* dropdown menu */}
       {showMenu && (
-        <div className=" rounded-lg bg-[#3A506A] shadow-full text-[#1A1B25] absolute bottom-29 left-30 p-3 border border-[#1B263B]/80 z-50">
+        <div ref={dropdownRef}  className=" rounded-lg bg-[#415A77] shadow-[0_4px_14px_rgba(0,0,0,0.25)] text-[#1A1B25] absolute bottom-29 left-30 p-3 border border-[#1B263B]/80 z-50">
           <button
             onClick={() => {
               setShowLogoutModal(true);
@@ -102,7 +99,7 @@ const Sidebar = ({ getNotes, setActiveView, activeView, user}) => {
       {/* logout */}
       {showLogoutModal && createPortal(
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-60 ">
-          <div className="bg-[#3A506A] border border-[#1B263B]/80 shadow-full p-9 rounded-lg w-98 h-72">
+          <div className="bg-[#3A506A] border border-[#1B263B]/80 shadow-[0_4px_14px_rgba(0,0,0,0.25)] p-9 rounded-lg w-98 h-72">
             <h1 className="text-3xl font-semibold mb-4 text-center mt-8">Logout</h1>
             <p className="mb-8 text-center">Are you sure you want to logout?</p>
             <div className="flex gap-4 items-center justify-center mt-8">

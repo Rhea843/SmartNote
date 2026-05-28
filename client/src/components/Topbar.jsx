@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { IoMdClose } from "react-icons/io";
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { createPortal } from "react-dom";
 import { MdLogout } from "react-icons/md";
 import { MdExpandMore } from "react-icons/md"
-import { BsTrash3 } from "react-icons/bs";
+import useClickOutside from "../hooks/useClickOutside";
+
 
 
 
@@ -13,6 +14,10 @@ const Topbar = ({isSidebarOpen, setIsSidebarOpen, user}) => {
   const [showMenu, setShowMenu] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const navigate = useNavigate()
+
+  const dropdownRef = useRef(null);
+    const closeDropdown = useCallback(() => setShowMenu(false), []);
+    useClickOutside(dropdownRef, closeDropdown);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -52,23 +57,19 @@ const Topbar = ({isSidebarOpen, setIsSidebarOpen, user}) => {
 
        {/* dropdown menu */}
         {showMenu && (
-          <div className=" rounded-lg bg-[#3A506A] shadow-full text-[#1A1B25] absolute top-9 right-18 border border-[#1B263B]/80 z-50">
+          <div ref={dropdownRef} className="rounded-lg bg-[#3A506A] shadow-[0_4px_14px_rgba(0,0,0,0.25)] text-[#1A1B25] p-4  absolute top-9 right-18 border border-[#1B263B]/80 z-50">
             <button
-             className="w-full"
+             className="w-full flex items-center gap-2"
               onClick={() => {
                 setShowLogoutModal(true);
                 setShowMenu(false);
               }}
             >
-              <div className='flex items-center gap-2 border-b border-gray-500 p-4 w-full'>
                 <MdLogout /> 
                 <p>Logout</p>
-              </div>
+
             </button>
-            <li className="flex items-center gap-2 p-4 list-none">
-              <BsTrash3 size={18} />
-              <Link to="#" className="text-xs uppercase tracking-wide">Trash</Link>
-            </li>
+
             
           </div>
         )}

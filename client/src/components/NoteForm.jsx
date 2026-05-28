@@ -1,12 +1,12 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { MdMoreHoriz } from "react-icons/md";
-import { MdFavoriteBorder } from "react-icons/md";
 import { IoPricetagsOutline } from "react-icons/io5";
 import { MdContentCopy } from "react-icons/md";
-import { RiExpandDiagonalLine } from "react-icons/ri";
-import { FaFolderPlus } from "react-icons/fa";
 import { MdOutlineDelete } from "react-icons/md";
 import { IoArrowBack } from "react-icons/io5";
+import { FiArchive } from "react-icons/fi";
+import { MdOutlinePushPin } from "react-icons/md";
+import useClickOutside from '../hooks/useClickOutside';
 
 const NoteForm = ({ selectedNote, onCreate, onUpdate, onDelete, onClose }) => {
 const [title, setTitle] = useState(selectedNote?.title || '')
@@ -16,6 +16,10 @@ const [currentDate, setCurrentDate] = useState(new Date());
 const formRef = useRef(null)
 const titleRef = useRef(title);
 const contentRef = useRef(content);
+
+const moreMenuRef = useRef(null);
+const closeMoreMenu = useCallback(() => setActiveMenu(null), []);
+useClickOutside(moreMenuRef, closeMoreMenu);
  
 {/* click outside handler */}
 useEffect(() => {
@@ -131,12 +135,12 @@ return date.toLocaleDateString('en-US', {
      </div> 
 
      {activeMenu === 'form' && (
-          <div className='bg-[#3A506A] rounded-lg shadow-[[0_4px_14px_rgba(45,91,227,0.25)]] text-[#1A1B25] absolute top-15 lg:right-15 right-9  w-48 z-50 flex flex-col'>
+          <div ref={moreMenuRef} className='bg-[#415A77] rounded-lg shadow-[0_4px_14px_rgba(0,0,0,0.25)] text-[#1A1B25] absolute top-15 lg:right-15 right-9  w-48 z-50 flex flex-col'>
             <button className='flex items-center gap-2 px-3 py-3 border-b border-gray-500 w-full'>
-              <MdFavoriteBorder className='text-xl'/>
-              <p>Add to Favorites</p>
+              <MdOutlinePushPin />
+              <p>Pin note</p>
             </button>
-  
+            
             <button className='flex items-center gap-2 px-3 py-3 border-b border-gray-500 w-full'>
               <IoPricetagsOutline className='text-xl' />
               <p>Tag note</p>
@@ -148,13 +152,8 @@ return date.toLocaleDateString('en-US', {
             </button>
   
             <button className='flex items-center gap-2 px-3 py-3 border-b border-gray-500 w-full'>
-              <RiExpandDiagonalLine className='text-xl' />
-              <p>Expand note</p>
-            </button>
-  
-            <button className='flex items-center gap-2 px-3 py-3 border-b border-gray-500 w-full'>
-              <FaFolderPlus className='text-xl' />
-              <p>Move to folder</p>
+              <FiArchive className='text-lg' />
+              <p>Archive note</p>
             </button>
   
             <button
@@ -166,7 +165,7 @@ return date.toLocaleDateString('en-US', {
               onClose();
               setActiveMenu(null)
              }}
-             className='flex items-center gap-2 px-3 py-3 border-b border-gray-500 w-full'
+             className='flex items-center gap-2 px-3 py-3  w-full'
             >
               <MdOutlineDelete className='text-2xl' />
               <p>Delete note</p>
