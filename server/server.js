@@ -6,6 +6,10 @@ import noteRoutes from './routes/notes.routes.js';
 import { authenticateToken } from './middlewares/auth.middleware.js';
 import pinRoute from './routes/pin.route.js';
 import archiveRoute from './routes/archive.route.js';
+import trashRoute from './routes/trash.route.js';
+import tagRoutes from './routes/tags.routes.js';
+import noteTagRoutes from './routes/noteTags.routes.js';
+
 
 
 dotenv.config();
@@ -18,6 +22,10 @@ app.use('/api/auth', authRoutes);
 app.use('/api/notes', noteRoutes);
 app.use('/api/notes', pinRoute); 
 app.use('/api/notes', archiveRoute);
+app.use('/api/notes', trashRoute);
+app.use('/api/tags', tagRoutes);
+app.use('/api/notes', noteTagRoutes);
+
 
 
 app.get('/', (req, res) => {

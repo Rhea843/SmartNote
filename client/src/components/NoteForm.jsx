@@ -8,11 +8,15 @@ import { FiArchive } from "react-icons/fi";
 import { MdOutlinePushPin } from "react-icons/md";
 import useClickOutside from '../hooks/useClickOutside';
 
-const NoteForm = ({ selectedNote, onCreate, onUpdate, onDelete, onClose }) => {
+const NoteForm = ({ selectedNote, onCreate, onUpdate, moveToTrash, onClose, onAddTag, onRemoveTag, allTags, onTogglePin, onToggleArchive}) => {
 const [title, setTitle] = useState(selectedNote?.title || '')
 const [content, setContent] = useState(selectedNote?.content || '')
 const [activeMenu, setActiveMenu] = useState(null);
 const [currentDate, setCurrentDate] = useState(new Date());
+const [showTagPanel, setShowTagPanel] = useState(false);
+
+
+
 const formRef = useRef(null)
 const titleRef = useRef(title);
 const contentRef = useRef(content);
@@ -20,6 +24,10 @@ const contentRef = useRef(content);
 const moreMenuRef = useRef(null);
 const closeMoreMenu = useCallback(() => setActiveMenu(null), []);
 useClickOutside(moreMenuRef, closeMoreMenu);
+
+const tagPanelRef = useRef(null);
+const closeTagPanel = useCallback(() => setShowTagPanel(false), []);
+useClickOutside(tagPanelRef, closeTagPanel);
  
 {/* click outside handler */}
 useEffect(() => {
@@ -88,6 +96,7 @@ return date.toLocaleDateString('en-US', {
 
 
 
+
   return (
     <div ref={formRef}  className='flex flex-col p-4 relative w-full h-full'>
       <div className='absolute top-4 lg:right-10 right-6 bg-[#3A506A] p-2 rounded-full w-10 h-10'>
@@ -103,19 +112,64 @@ return date.toLocaleDateString('en-US', {
       </div>
 
       <button 
-          onClick={onClose}
-           className="lg:hidden absolute top-4 md:left-8 left-4 text-2xl" 
-        >
-          <IoArrowBack />
-        </button>
+        onClick={onClose}
+          className="lg:hidden absolute top-4 md:left-8 left-4 text-2xl" 
+      >
+        <IoArrowBack />
+      </button>
 
+      {showTagPanel && selectedNote && (
+        <div ref={tagPanelRef} className='bg-[#415A77] rounded-lg shadow-[0_4px_14px_rgba(0,0,0,0.25)] text-[#1A1B25] absolute top-15 lg:right-15 right-9 w-48 z-50 flex flex-col p-3'>
+          <p className='text-sm font-semibold mb-2'>Add to tag</p>
+          {allTags && allTags.length > 0 ? (
+            allTags.map(tag => {
+              const isAdded = selectedNote.tags?.some(t => t.id === tag.id);
+              return (
+                <button
+                  key={tag.id}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                     console.log('tag:', tag);
+                     console.log('tag.id:', tag.id);
+                    isAdded
+                      ? onRemoveTag(selectedNote.id, tag.id)
+                      : onAddTag(selectedNote.id, tag.id);
+                  }}
+                  className={`flex items-center gap-2 px-2 py-2 rounded text-sm w-full text-left ${isAdded ? 'bg-[#1B263B] text-white' : 'hover:bg-[#1B263B]/40'}`}
+                >
+                  <IoPricetagsOutline />
+                  {tag.name}
+                </button>
+              );
+            })
+          ) : (
+            <p className='text-xs text-gray-300'>No tags yet. Create one on the Tags page.</p>
+          )}
+        </div>
+     )}
+     
 
       <div className='flex flex-col items-center w-full mt-8 px-4'>
-       <p className="text-sm text-gray-400 mt-6">
-          {selectedNote ? formatDate(new Date(selectedNote.updated_at)) : formatDate(currentDate)}
+       <p className="text-sm text-gray-400 mt-3">
+          {selectedNote?.updated_at ? formatDate(new Date(selectedNote.updated_at)) : formatDate(currentDate)}
        </p>
       
-     
+        {selectedNote?.tags && selectedNote.tags.length > 0 && (
+          <div className='flex flex-wrap gap-1 mt-4'>
+            {selectedNote.tags.map(tag => (
+              <div
+                key={tag.id}
+                className='bg-[#3A506A] text-[#fafafa] text-xs px-3 py-2 rounded-md'
+              >
+                <span className='flex items-center gap-1'>
+                  <IoPricetagsOutline />
+                  {tag.name}
+                </span>
+                
+              </div>
+            ))}
+          </div>
+        )}
       
         <input
           type="text"
@@ -136,12 +190,28 @@ return date.toLocaleDateString('en-US', {
 
      {activeMenu === 'form' && (
           <div ref={moreMenuRef} className='bg-[#415A77] rounded-lg shadow-[0_4px_14px_rgba(0,0,0,0.25)] text-[#1A1B25] absolute top-15 lg:right-15 right-9  w-48 z-50 flex flex-col'>
-            <button className='flex items-center gap-2 px-3 py-3 border-b border-gray-500 w-full'>
+            <button
+             onClick={(e) => {
+              e.stopPropagation();
+              if(selectedNote) {
+                onTogglePin(selectedNote.id);
+              }
+              onClose();
+              setActiveMenu(null)
+             }} 
+              className='flex items-center gap-2 px-3 py-3 border-b border-gray-500 w-full'
+            >
               <MdOutlinePushPin />
               <p>Pin note</p>
             </button>
             
-            <button className='flex items-center gap-2 px-3 py-3 border-b border-gray-500 w-full'>
+            <button 
+             onClick={(e) => {
+              e.stopPropagation();
+              setShowTagPanel(!showTagPanel);
+              setActiveMenu(null);
+             }}
+             className='flex items-center gap-2 px-3 py-3 border-b border-gray-500 w-full'>
               <IoPricetagsOutline className='text-xl' />
               <p>Tag note</p>
             </button>
@@ -151,7 +221,17 @@ return date.toLocaleDateString('en-US', {
               <p>Copy note</p>
             </button>
   
-            <button className='flex items-center gap-2 px-3 py-3 border-b border-gray-500 w-full'>
+            <button
+             onClick={(e) => {
+              e.stopPropagation();
+              if(selectedNote) {
+                onToggleArchive(selectedNote.id);
+              }
+              onClose();
+              setActiveMenu(null)
+             }}
+              className='flex items-center gap-2 px-3 py-3 border-b border-gray-500 w-full'
+             >
               <FiArchive className='text-lg' />
               <p>Archive note</p>
             </button>
@@ -160,7 +240,7 @@ return date.toLocaleDateString('en-US', {
              onClick={(e) => {
               e.stopPropagation();
               if(selectedNote) {
-                onDelete(selectedNote.id);
+                moveToTrash(selectedNote.id);
               }
               onClose();
               setActiveMenu(null)
@@ -168,7 +248,7 @@ return date.toLocaleDateString('en-US', {
              className='flex items-center gap-2 px-3 py-3  w-full'
             >
               <MdOutlineDelete className='text-2xl' />
-              <p>Delete note</p>
+              <p>Move to Trash</p>
             </button>
           </div>
       )}

@@ -7,8 +7,9 @@ import useClickOutside from '../hooks/useClickOutside';
 import { RiInboxUnarchiveLine } from "react-icons/ri";
 
 
-const ArchivedNotes = ({ notes, onDelete, onSelectNote, onUnarchive }) => {
+const ArchivedNotes = ({ notes, moveToTrash, onSelectNote, onUnarchive }) => {
   const [activeMenu, setActiveMenu] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
   const menuRef = useRef(null);
 
   const closeMenu = useCallback(() => setActiveMenu(null), []);
@@ -28,6 +29,10 @@ const ArchivedNotes = ({ notes, onDelete, onSelectNote, onUnarchive }) => {
     })
   };
 
+  const filteredNotes = notes.filter(note => 
+    note.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    note.content?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
    <div className="h-screen bg-[#415A77] relative flex flex-col">
@@ -37,18 +42,25 @@ const ArchivedNotes = ({ notes, onDelete, onSelectNote, onUnarchive }) => {
         <input
         type="search"
         placeholder="Search notes..."
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
         className="bg-[#fafafa] w-full text-[1A1B25]/60 rounded-lg pl-8 pr-1 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-[14px]"
         />
       </div>
-
+      
+      {/* header */}
       <div className='p-2 border-b border-gray-400'>
         <h1 className='font-semibold text-left text-lg tracking-wider'>ARCHIVED NOTES</h1>
       </div>
         
-  
+     {/* archived notes */}
       <div className='overflow-y-auto flex-1 pb-36 lg:pb-20 scrollbar-thin scrollbar-track-[#415A77] scrollbar-thumb-[#778DA9] hover:scrollbar-thumb-[#1B263B]'>
-        {notes && notes.length > 0 ? (
-          notes.map(note => (
+        {notes.length === 0 ? (
+          <p className="text-[16px] mt-42 md:mt-82 lg:mt-12 text-center text-gray-300">No notes yet.</p>
+        ): filteredNotes.length === 0 ? (
+          <p className='text-center text-gray-400 mt-12'>No Notes match your search.</p>
+        ):(
+          filteredNotes.map((note) => (
             <div 
               key={note.id}
               data-no-close="true"
@@ -70,7 +82,7 @@ const ArchivedNotes = ({ notes, onDelete, onSelectNote, onUnarchive }) => {
               </div>
             <p className="text-sm text-gray-900 font-normal line-clamp-2 mt-2 px-3 ">{truncate(note.content, 50)}</p>
 
-            <p className="text-xs text-gray-900 font-bold text-right">
+            <p className="text-xs text-gray-900 pr-2 font-bold text-right">
               {formatDate(note.updated_at)}
             </p>
 
@@ -104,7 +116,7 @@ const ArchivedNotes = ({ notes, onDelete, onSelectNote, onUnarchive }) => {
                 <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  onDelete(note.id);
+                  moveToTrash(note.id);
                   setActiveMenu(null);
                 }}
                   className='flex items-center gap-2 px-3 py-3 '
@@ -117,9 +129,7 @@ const ArchivedNotes = ({ notes, onDelete, onSelectNote, onUnarchive }) => {
 
           </div>
         ))
-        ) : (
-        <p className="text-[16px] mt-42 md:mt-82 lg:mt-12 text-center text-gray-300">Your archived notes will appear here.</p>
-      )}
+     )}
      </div>
    </div>
   )

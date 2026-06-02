@@ -6,6 +6,9 @@ import NoteForm from '../components/NoteForm';
 import Topbar from '../components/Topbar';
 import Bottombar from '../components/Bottombar';
 import ArchivedNotes from '../components/ArchivedNotes.jsx';
+import TrashNote from '../components/TrashNote.jsx';
+import TagNote from'../components/TagNote.jsx';
+import WelcomeScreen from '../components/WelcomeScreen.jsx';
 
 
 
@@ -14,9 +17,13 @@ const Dashboard = () => {
 const [notes, setNotes] = useState([]);
 const [showForm, setShowForm] = useState(false);
 const [selectedNote, setSelectedNote] = useState(null); // null = new note, note object = editing
-const [activeView, setActiveView] = useState('notes');
+const [activeView, setActiveView] = useState(
+  window.innerWidth >= 1024 ? 'notes' : null
+);
 const [user, setUser] = useState(null);
 const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+const [allTags, setAllTags] = useState([]);
+
 const token = localStorage.getItem('token');
 const navigate = useNavigate();
  
@@ -28,18 +35,6 @@ useEffect(() => {
   selectedNoteRef.current = selectedNote;
 }, [selectedNote]);
 
-useEffect(() => {
-  if (notes.length === 0) return;
-
-  const isDesktop = window.innerWidth >= 768;
-  const hasSelection = selectedNoteRef.current !== null;
-
-  if (!hasSelection && isDesktop && !showForm) {
-    setSelectedNote(notes[0]);
-    setShowForm(true);
-    setActiveView('notes');
-  }
-}, [notes, showForm]);
 
 const getNotes = useCallback(async () => {
 
@@ -132,8 +127,6 @@ useEffect(() => {
 const togglePin = async (id) => {
   try{
 
-    const token = localStorage.getItem('token');
-
     const res = await fetch(
       `http://localhost:8080/api/notes/${id}/pin`,
       {
@@ -150,7 +143,7 @@ const togglePin = async (id) => {
       prevNotes.map(note =>
         note.id === id ? updatedNote : note
       )
-    );
+   );
   } catch (error){
     console.log(error);
   }
@@ -158,7 +151,6 @@ const togglePin = async (id) => {
 
 const toggleArchive = async (id) => {
   try{
-    const token = localStorage.getItem('token');
 
     const res = await fetch(
       `http://localhost:8080/api/notes/${id}/archive`,
@@ -178,7 +170,120 @@ const toggleArchive = async (id) => {
   }
 };
 
-console.log('archived notes:', notes.filter(note => note.is_archived))
+const moveToTrash = async(id) => {
+  try{
+
+    const res = await fetch(
+      `http://localhost:8080/api/notes/${id}/trash`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      }
+    );
+
+    const updatedNote = await res.json();
+
+    setNotes(prev => prev.map(note => note.id === id ? updatedNote : note));
+  } catch (error){
+    console.log(error);
+  }
+};
+
+const restoreNote = async (id) => {
+  try{
+
+    const res = await fetch(
+      `http://localhost:8080/api/notes/${id}/restore`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      }
+    );
+
+    const updatedNote = await res.json();
+
+    setNotes(prev => prev.map(note => note.id === id ? updatedNote : note));
+  } catch (error){
+    console.log(error);
+  }
+};
+
+const getTags = useCallback(async () => {
+  const res = await fetch('http://localhost:8080/api/tags', {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+
+  const data = await res.json();
+  setAllTags(data);
+}, [token]);
+
+useEffect(() => {
+  getNotes();
+  getUser();
+  getTags();
+}, [getNotes, getUser, getTags]);
+
+
+const addTagToNote = async(noteId, tagId) => {
+    console.log('noteId:', noteId, 'tagId:', tagId);
+  try{
+    const res = await fetch(`http://localhost:8080/api/notes/${noteId}/tags`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ tagId: Number(tagId) })
+    });
+
+    const updatedNote = await res.json();
+    await getNotes();
+    setSelectedNote(updatedNote);
+  } catch (err) {
+    console.error(err);
+  } 
+}
+
+const removeTagFromNote = async (noteId, tagId) => {
+  try{
+    const res = await fetch(`http://localhost:8080/api/notes/${noteId}/tags/${tagId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    const updatedNote = await res.json();
+    await getNotes();
+    setSelectedNote(updatedNote);
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+const createTag = async (name) => {
+  try {
+    const res = await fetch('http://localhost:8080/api/tags', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ name })
+    });
+    const newTag = await res.json();
+    setAllTags(prev => [...prev, newTag]);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 
   return (
     <div>
@@ -195,13 +300,13 @@ console.log('archived notes:', notes.filter(note => note.is_archived))
 
          {/* note list */}
           
-          {(activeView === 'notes' || activeView === 'archived') && (
+          {(activeView === 'notes' || activeView === 'archived' || activeView === 'trash' || activeView === 'tags') && (
             <div className="shrink-0 w-full  lg:w-4/12 transition-all duration-300"> 
             {activeView === 'notes' &&
               
               <NoteList 
-                notes={sortedNotes.filter(note => !note.is_archived)} 
-                onDelete={deleteNote} 
+                notes={sortedNotes.filter(note => !note.is_archived && !note.deleted_at)} 
+                moveToTrash={moveToTrash} 
                 onUpdate={updateNote} 
                 onTogglePin={togglePin}
                 onToggleArchive={toggleArchive}
@@ -221,7 +326,7 @@ console.log('archived notes:', notes.filter(note => note.is_archived))
             {activeView === 'archived' &&
               <ArchivedNotes
                 notes={notes.filter(note => note.is_archived)} 
-                onDelete={deleteNote} 
+                moveToTrash={moveToTrash} 
                 onUpdate={updateNote} 
                 onUnarchive={toggleArchive}
                 onSelectNote={(note) => {     
@@ -235,29 +340,76 @@ console.log('archived notes:', notes.filter(note => note.is_archived))
                 }}
               />
             }
+
+            {activeView === 'trash' &&
+              <TrashNote
+                notes={notes.filter(note => note.deleted_at !== null)}
+                onDelete={deleteNote}
+                onRestore={restoreNote}
+                onSelectNote={(note) => {
+                setSelectedNote(note);
+                setShowForm(true);
+                  if(window.innerWidth < 1024) {
+                    setActiveView(null);
+                  } else{
+                    setActiveView('trash');
+                  }
+                }}
+              />
+            }
+            
+            {activeView === 'tags' && (
+              <TagNote
+                notes={notes.filter(note => !note.deleted_at)}
+                allTags={allTags}
+                onCreateTag={createTag}
+                onSelectNote={(note) => {
+                  setSelectedNote(note);
+                  setShowForm(true);
+                  if (window.innerWidth < 1024) setActiveView(null);
+                  else setActiveView('tags');
+                }}
+              />
+           )}
+
             </div>
           
           )}
           
          {/* note form */}
-          {showForm && (
             <div className={`min-w-0 transition-all duration-300 ${activeView === 'notes' || activeView === 'archived' ? 'flex-1' : 'w-full'}`}>
-              <NoteForm
-                selectedNote={selectedNote}    
-                onCreate={createNote}
-                onUpdate={updateNote}
-                onDelete={deleteNote}
-                onToggleArchive={toggleArchive}
-                onClose={() => {               
-                  setShowForm(false);
-                  setSelectedNote(null);
-                  if (window.innerWidth < 1024) {
-                    setActiveView('notes');
-                  }
-                }}
-              />
+              {showForm ? (
+                <NoteForm
+                  selectedNote={notes.find(n => n.id === selectedNote?.id) || selectedNote}  
+                  onCreate={createNote}
+                  onUpdate={updateNote}
+                  onDelete={moveToTrash}
+                  onToggleArchive={toggleArchive}
+                  moveToTrash={moveToTrash}
+                  onAddTag={addTagToNote}
+                  onRemoveTag={removeTagFromNote}
+                  allTags={allTags}
+                  onClose={() => {               
+                    setShowForm(false);
+                    setSelectedNote(null);
+                    if (window.innerWidth < 1024) {
+                      setActiveView(null);
+                    }
+                  }}
+                />
+              ):(
+                  <WelcomeScreen
+                    user={user}
+                    notes={notes}
+                    allTags={allTags}
+                    onNewNote={() => {
+                      setSelectedNote(null);
+                      setShowForm(true);
+                    }}
+                  />
+                )}
+
             </div>
-          )}
         </div>
 
         <Bottombar getNotes={getNotes} setActiveView={setActiveView} activeView={activeView}  setShowForm={setShowForm}  setSelectedNote={setSelectedNote} />

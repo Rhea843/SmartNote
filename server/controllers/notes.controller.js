@@ -32,9 +32,19 @@ export const getNotes = async (req, res) => {
 
 
     const notes = await pool.query(
-      `SELECT * FROM notes
-       WHERE user_id = $1
-       ORDER BY id DESC`, 
+      `SELECT notes.*, 
+        COALESCE(
+          JSON_AGG(
+            JSON_BUILD_OBJECT('id', tags.id, 'name', tags.name)
+          ) FILTER (WHERE tags.id IS NOT NULL), 
+          '[]'
+        ) AS tags
+      FROM notes
+      LEFT JOIN note_tags ON notes.id = note_tags.note_id
+      LEFT JOIN tags ON note_tags.tag_id = tags.id
+      WHERE notes.user_id = $1
+      GROUP BY notes.id
+      ORDER BY notes.id DESC`, 
       [userId]
     );
 
@@ -68,9 +78,25 @@ export const updateNote = async (req, res) => {
       return res.status(404).send({error: "Note not found"});
     }
 
+    const noteWithTags = await pool.query(
+    `SELECT notes.*, 
+      COALESCE(
+        JSON_AGG(
+          JSON_BUILD_OBJECT('id', tags.id, 'name', tags.name)
+        ) FILTER (WHERE tags.id IS NOT NULL), 
+        '[]'
+      ) AS tags
+      FROM notes
+      LEFT JOIN note_tags ON notes.id = note_tags.note_id
+      LEFT JOIN tags ON note_tags.tag_id = tags.id
+      WHERE notes.id = $1
+      GROUP BY notes.id`,
+      [noteId]
+    );
+
     res.json({
       message: "Note updated",
-      note: updated.rows[0]
+      note: noteWithTags.rows[0]
     });
 
   } catch (error) {

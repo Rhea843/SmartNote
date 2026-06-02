@@ -24,6 +24,18 @@ const Sidebar = ({ getNotes, setActiveView, activeView, user}) => {
     setActiveView(prev => prev === 'notes' ? null : 'notes');
   }
 
+  const handleArchivedNotes = () => {
+    setActiveView(prev => prev === 'archived' ? null : 'archived');
+  }
+
+  const handleTags = () => {
+    setActiveView(prev => prev === 'tags' ? null : 'tags');
+  }
+
+  const handleTrash = () => {
+    setActiveView(prev => prev === 'trash' ? null : 'trash');
+  }
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     navigate('/login');
@@ -42,17 +54,21 @@ const Sidebar = ({ getNotes, setActiveView, activeView, user}) => {
           </li>
           <li className={`flex items-center gap-2 mt-10 ${activeView === 'archived' ? 'font-bold  text-[#2d5be3]' : ''}`}>
             <FiArchive size={18} />
-            <button onClick={() => setActiveView('archived')} className='text-xs uppercase tracking-wide'>
+            <button onClick={handleArchivedNotes} className='text-xs uppercase tracking-wide'>
               Archive
             </button>
           </li>
-          <li className={`flex items-center gap-2 mt-10 ${activeView === 'tags' ? 'font-bold  text-[#2d5be3]' : ''}`}  >
+          <li className={`flex items-center gap-2 mt-10 ${activeView === 'tags' ? 'font-bold  text-[#2d5be3]' : ''}`}>
             <IoPricetagsOutline size={18} />
-            <Link to="#" className="text-xs uppercase tracking-wide">Tag</Link>
+            <button onClick={handleTags} className='text-xs uppercase tracking-wide'>
+              Tags
+            </button>
           </li>
-          <li className={`flex items-center gap-2 mt-10 ${activeView === 'trash' ? 'font-bold  text-[#2d5be3]' : ''}`}  >
+          <li className={`flex items-center gap-2 mt-10 ${activeView === 'trash' ? 'font-bold  text-[#2d5be3]' : ''}`}>
             <BsTrash3 size={18} />
-            <Link to="#" className="text-xs uppercase tracking-wide">Trash</Link>
+            <button onClick={handleTrash} className='text-xs uppercase tracking-wide'>
+              trash
+            </button>
           </li>
         </ul>
      </div>

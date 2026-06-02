@@ -1,16 +1,60 @@
 
-import { Link } from "react-router-dom";
 import { PiNotepad } from "react-icons/pi";
 import { FiArchive } from "react-icons/fi";
 import { IoPricetagsOutline } from "react-icons/io5";
 import { BsTrash3 } from "react-icons/bs";
 
-const Bottombar = ({getNotes, setActiveView, activeView, setShowForm}) => {
+const Bottombar = ({getNotes, setActiveView, activeView, setShowForm, setSelectedNote}) => {
 
   const handleAllNotes = () => {
     getNotes();
-    setActiveView('notes');
-    setShowForm(false);
+    
+    if(activeView === 'notes'){
+      setActiveView(null);
+      setShowForm(false);
+      setSelectedNote(null);
+    }else{
+      setActiveView('notes')
+      setShowForm(false);
+    }
+  }
+
+  const handleArchivedNotes = () => {
+    getNotes();
+    
+    if(activeView === 'archived'){
+      setActiveView(null);
+      setShowForm(false);
+      setSelectedNote(null);
+    }else{
+      setActiveView('archived')
+      setShowForm(false);
+    }
+  }
+  const handletagNotes = () => {
+    getNotes();
+    
+    if(activeView === 'tags'){
+      setActiveView(null);
+      setShowForm(false);
+      setSelectedNote(null);
+    }else{
+      setActiveView('tags')
+      setShowForm(false);
+    }
+  }
+
+  const handletrashNotes = () => {
+    getNotes();
+    
+    if(activeView === 'trash'){
+      setActiveView(null);
+      setShowForm(false);
+      setSelectedNote(null);
+    }else{
+      setActiveView('trash')
+      setShowForm(false);
+    }
   }
 
   return (
@@ -24,20 +68,20 @@ const Bottombar = ({getNotes, setActiveView, activeView, setShowForm}) => {
             </button>
           </li>
            <li>
-            <button onClick={() => setActiveView('archived')} className={`flex flex-col items-center gap-2 transition-colors duration-200  ${activeView === 'archived' ? 'text-[#2d5be3]' : 'text-gray-400 hover:text-gray-200'}`} >
+            <button onClick={handleArchivedNotes} className={`flex flex-col items-center gap-2 transition-colors duration-200  ${activeView === 'archived' ? 'text-[#2d5be3]' : 'text-gray-400 hover:text-gray-200'}`} >
               <FiArchive size={16}/>
               <span className='text-[10px] md:text-xs uppercase tracking-wide'>Archive</span>
             </button>
           </li>
-          <li className="flex flex-col items-center gap-3 text-gray-400 hover:text-gray-200">
-            <IoPricetagsOutline size={16} />
-            <Link to="#" className="text-[10px] md:text-xs uppercase tracking-wide ">Tag</Link>
-          </li>
+          <button onClick={handletagNotes} className={`flex flex-col items-center gap-2 transition-colors duration-200  ${activeView === 'tags' ? 'text-[#2d5be3]' : 'text-gray-400 hover:text-gray-200'}`} >
+              <IoPricetagsOutline size={16}/>
+              <span className='text-[10px] md:text-xs uppercase tracking-wide'>tags</span>
+            </button>
 
-           <li className="flex flex-col items-center gap-3 text-gray-400 hover:text-gray-200">
-            <BsTrash3 size={18} />
-            <Link to="#" className="text-xs uppercase tracking-wide">Trash</Link>
-          </li>
+           <button onClick={handletrashNotes} className={`flex flex-col items-center gap-2 transition-colors duration-200  ${activeView === 'trash' ? 'text-[#2d5be3]' : 'text-gray-400 hover:text-gray-200'}`} >
+              <BsTrash3 size={16}/>
+              <span className='text-[10px] md:text-xs uppercase tracking-wide'>trash</span>
+            </button>
           </ul>
       </div>
     </div>
