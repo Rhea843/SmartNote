@@ -93,8 +93,7 @@ const Login = () => {
       );
       
       const data = await response.json();
-      
-      console.log(data);
+    
       
       localStorage.setItem('token', data.token);
       navigate('/Dashboard')
@@ -159,7 +158,7 @@ const Login = () => {
     <div 
       className='flex-1 flex items-center justify-center'
       style={{
-        background: 'radial-gradient(circle, rgba(0,0,0,0.12) 1px, transparent 1px), white',
+        background: 'radial-gradient(circle, rgba(0,0,0,0.12) 1px, transparent 1px), radial-gradient(circle at top left, rgba(65, 90, 119, 0.25), transparent 60%)',
         backgroundSize: '24px 24px, 100% 100%'
       }}
     >
@@ -171,7 +170,7 @@ const Login = () => {
             <input 
               type="email"
               name='email'
-              placeholder="email"
+              placeholder="your_email@example.com"
               value={formData.email}
               onChange={handleChange}
               className="border p-3 rounded-md"
@@ -180,7 +179,7 @@ const Login = () => {
             <input
               type="password"
               name='password'
-              placeholder="Password"
+              placeholder="your_password"
               value={formData.password}
               onChange={handleChange}
               className="border p-3 rounded-md"

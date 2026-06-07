@@ -7,7 +7,7 @@ import useClickOutside from '../hooks/useClickOutside';
 import { RiInboxUnarchiveLine } from "react-icons/ri";
 
 
-const ArchivedNotes = ({ notes, moveToTrash, onSelectNote, onUnarchive }) => {
+const ArchivedNotes = ({ notes, moveToTrash, onSelectNote, onUnarchive, isLoading, error }) => {
   const [activeMenu, setActiveMenu] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const menuRef = useRef(null);
@@ -29,9 +29,14 @@ const ArchivedNotes = ({ notes, moveToTrash, onSelectNote, onUnarchive }) => {
     })
   };
 
+  const stripHtml = (html) => {
+   const doc = new DOMParser().parseFromString(html, 'text/html');
+   return doc.body.textContent || '';
+  };
+
   const filteredNotes = notes.filter(note => 
     note.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    note.content?.toLowerCase().includes(searchQuery.toLowerCase())
+    stripHtml(note.content).toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -55,11 +60,29 @@ const ArchivedNotes = ({ notes, moveToTrash, onSelectNote, onUnarchive }) => {
         
      {/* archived notes */}
       <div className='overflow-y-auto flex-1 pb-36 lg:pb-20 scrollbar-thin scrollbar-track-[#415A77] scrollbar-thumb-[#778DA9] hover:scrollbar-thumb-[#1B263B]'>
-        {notes.length === 0 ? (
-          <p className="text-[16px] mt-42 md:mt-82 lg:mt-12 text-center text-gray-300">No notes yet.</p>
-        ): filteredNotes.length === 0 ? (
-          <p className='text-center text-gray-400 mt-12'>No Notes match your search.</p>
-        ):(
+        {isLoading ? (
+            <div className="p-4 space-y-3">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="animate-pulse border-b border-gray-400 pb-4">
+                  <div className="h-5 w-2/3 bg-gray-300 rounded mb-2"></div>
+                  <div className="h-3 w-full bg-gray-300 rounded mb-1"></div>
+                  <div className="h-3 w-4/5 bg-gray-300 rounded"></div>
+                </div>
+              ))}
+            </div>
+          ) : error ? (
+            <p className="text-center text-red-400 mt-12">
+              {error}
+            </p>
+          ) : notes.length === 0 ? (
+            <p className="text-center text-gray-400 mt-12">
+              No notes yet. Create your first note!
+            </p>
+          ) : filteredNotes.length === 0 ? (
+            <p className="text-center text-gray-400 mt-12">
+              No Notes match your search.
+            </p>
+          ) : (
           filteredNotes.map((note) => (
             <div 
               key={note.id}
@@ -80,7 +103,7 @@ const ArchivedNotes = ({ notes, moveToTrash, onSelectNote, onUnarchive }) => {
               </button>
               
               </div>
-            <p className="text-sm text-gray-900 font-normal line-clamp-2 mt-2 px-3 ">{truncate(note.content, 50)}</p>
+            <p className="text-sm text-gray-900 font-normal line-clamp-2 mt-2 px-3 ">{truncate(stripHtml(note.content), 50)}</p>
 
             <p className="text-xs text-gray-900 pr-2 font-bold text-right">
               {formatDate(note.updated_at)}

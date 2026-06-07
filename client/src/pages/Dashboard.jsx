@@ -16,7 +16,9 @@ import WelcomeScreen from '../components/WelcomeScreen.jsx';
 const Dashboard = () => {
 const [notes, setNotes] = useState([]);
 const [showForm, setShowForm] = useState(false);
-const [selectedNote, setSelectedNote] = useState(null); // null = new note, note object = editing
+const [selectedNote, setSelectedNote] = useState(null);
+const [isLoading, setIsLoading] = useState(false);
+const [error, setError] = useState(null);
 const [activeView, setActiveView] = useState(
   window.innerWidth >= 1024 ? 'notes' : null
 );
@@ -37,27 +39,34 @@ useEffect(() => {
 
 
 const getNotes = useCallback(async () => {
-
   if (!token) {
-  navigate('/login');
-  return;
-}
+    navigate('/login');
+    return;
+  }
 
-  const res = await fetch('http://localhost:8080/api/notes', {
-    headers: {
-      'Authorization': `Bearer ${token}`
+  try {
+    setIsLoading(true);
+    setError(null);
+
+    const res = await fetch('http://localhost:8080/api/notes', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!res.ok) {
+      throw new Error('Failed to fetch notes');
     }
-  });
 
-  const data = await res.json();
-  setNotes(data.notes);
+    const data = await res.json();
+    setNotes(data.notes);
 
-
+  } catch (err) {
+    setError(err.message || 'Something went wrong');
+  } finally {
+    setIsLoading(false);
+  }
 }, [token, navigate]);
-
-useEffect(() => { 
-  getNotes();
-}, [getNotes])
 
 const createNote =  useCallback(async(title, content) => {
   const res = await fetch('http://localhost:8080/api/notes', {
@@ -306,6 +315,8 @@ const createTag = async (name) => {
               
               <NoteList 
                 notes={sortedNotes.filter(note => !note.is_archived && !note.deleted_at)} 
+                isLoading={isLoading}
+                error={error}
                 moveToTrash={moveToTrash} 
                 onUpdate={updateNote} 
                 onTogglePin={togglePin}
@@ -325,7 +336,9 @@ const createTag = async (name) => {
 
             {activeView === 'archived' &&
               <ArchivedNotes
-                notes={notes.filter(note => note.is_archived)} 
+                notes={notes.filter(note => note.is_archived)}
+                isLoading={isLoading}
+                error={error}
                 moveToTrash={moveToTrash} 
                 onUpdate={updateNote} 
                 onUnarchive={toggleArchive}
@@ -344,6 +357,8 @@ const createTag = async (name) => {
             {activeView === 'trash' &&
               <TrashNote
                 notes={notes.filter(note => note.deleted_at !== null)}
+                isLoading={isLoading}
+                error={error}
                 onDelete={deleteNote}
                 onRestore={restoreNote}
                 onSelectNote={(note) => {

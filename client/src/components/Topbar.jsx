@@ -36,7 +36,7 @@ const Topbar = ({isSidebarOpen, setIsSidebarOpen, user}) => {
         }
       </button>
 
-      <h1 className="app-title font-bold text-lg tracking-tight text-[#fafafa]">SmartyNote</h1>
+      <h1 className="app-title font-bold text-lg tracking-tight text-[#fafafa]">SmartNote</h1>
 
       {/* user profile */}
         <div className="flex items-center justify-center gap-1 lg:hidden ">

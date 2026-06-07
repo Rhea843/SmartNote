@@ -1,6 +1,7 @@
 import { MdPushPin } from "react-icons/md";
 import { IoMdClock } from "react-icons/io";
 import { FaTag } from "react-icons/fa6";
+import { GrNotes } from "react-icons/gr";
 
 
 const WelcomeScreen = ({ user, notes, allTags, onNewNote }) => {
@@ -52,36 +53,48 @@ const WelcomeScreen = ({ user, notes, allTags, onNewNote }) => {
       
 
 
-      <div className="grid grid-cols-2 gap-4 w-full ">
-        
-        <div className="bg-[#415A77]/20 rounded-md p-6 text-left shadow-full">
-          <p className="text-2xl font-bold text-[#1A1B25]">{totalNotes}</p>
-          <p className="text-xs text-gray-400 mt-1">Total Notes</p>
+      <div className="grid grid-cols-2 gap-4 w-full">
+
+        <div className="bg-[#415A77]/20 rounded-md p-6 shadow-full flex items-center gap-3">
+          <div className="bg-[#2d5be3]/20 p-3 rounded-full w-11 h-11">
+            <GrNotes className="text-xl text-[#2d5be3]" />
+          </div>
+          <div className="flex flex-col items-start">
+            <p className="text-xl font-bold text-[#1A1B25]">{totalNotes}</p>
+            <p className="text-xs text-gray-400 font-medium">Total Notes</p>
+          </div>
         </div>
 
-        <div className="bg-[#415A77]/20 rounded-md p-6 text-left shadow-full">
-          <div className="flex items-center gap-1 text-2xl font-bold text-[#1A1B25]">
-            <MdPushPin className="text-xl" />
-            {pinnedNotes}
+        <div className="bg-[#415A77]/20 rounded-md p-6 shadow-full flex items-center gap-3">
+          <div className="bg-[#2d5be3]/20 p-3 rounded-full w-11 h-11">
+            <MdPushPin className="text-xl text-[#2d5be3]" />
           </div>
-          <p className="text-xs text-gray-400 mt-1">Pinned</p>
-        </div>
-        
-        <div className="bg-[#415A77]/20 rounded-md p-6 text-left shadow-full">
-          <div className="flex items-center gap-1 text-2xl font-bold text-[#1A1B25]">
-            <IoMdClock className="text-xl" />
-            {recentNotes}
+          <div className="flex flex-col items-start">
+            <p className="text-xl font-bold text-[#1A1B25]">{pinnedNotes}</p>
+            <p className="text-xs text-gray-400 font-medium">Pinned</p>
           </div>
-          <p className="text-xs text-gray-400 mt-1">Recent (7 days)</p>
         </div>
 
-        <div className="bg-[#415A77]/20 rounded-xl p-6 text-left shadow-full">
-          <div className="flex items-center gap-1 text-2xl font-bold text-[#1A1B25]">
-            <FaTag className="text-xl" />
-            {allTags.length}
+        <div className="bg-[#415A77]/20 rounded-md p-6 shadow-full flex items-center gap-3">
+          <div className="bg-[#2d5be3]/20 p-3 rounded-full w-11 h-11">
+            <IoMdClock  className="text-xl text-[#2d5be3]" />
           </div>
-          <p className="text-xs text-gray-400 mt-1">Tags</p>
+          <div className="flex flex-col items-start">
+            <p className="text-xl font-bold text-[#1A1B25]">{recentNotes}</p>
+            <p className="text-xs text-gray-400 font-medium">Recent (7 days)</p>
+          </div>
         </div>
+
+        <div className="bg-[#415A77]/20 rounded-md p-6 shadow-full flex items-center gap-3">
+          <div className="bg-[#2d5be3]/20 p-3 rounded-full w-11 h-11">
+            <FaTag className="text-xl text-[#2d5be3]" />
+          </div>
+          <div className="flex flex-col items-start">
+            <p className="text-xl font-bold text-[#1A1B25]">{allTags.length}</p>
+            <p className="text-xs text-gray-400 font-medium">Tags</p>
+          </div>
+        </div>
+      
       </div>
     </div>
   )

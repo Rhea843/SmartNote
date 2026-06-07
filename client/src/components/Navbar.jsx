@@ -12,7 +12,7 @@ const Navbar = () => {
       <div className='flex items-center justify-between p-4 '>
 
         <div className='hidden md:block'>
-          <h1 className='app-title hidden text-2xl md:block font-semibold text-[#1E2533]'>SmartyNote</h1>
+          <h1 className='app-title hidden text-2xl md:block font-semibold text-[#1E2533]'>SmartNote</h1>
         </div>
 
         <div className='lg:hidden flex items-center justify-center gap-3'>

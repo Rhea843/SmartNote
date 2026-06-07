@@ -17,6 +17,16 @@ const TagsPage = ({ notes, allTags, onSelectNote, onCreateTag }) => {
     }
   };
 
+  const truncate = (text, limit) => {
+    if (!text) return '';
+    return text.length > limit ? text.slice(0, limit) + '...' : text;
+  };
+
+  const stripHtml = (html) => {
+   const doc = new DOMParser().parseFromString(html, 'text/html');
+   return doc.body.textContent || '';
+  };
+
   const filteredNotes = selectedTag
     ? notes
     .filter(note => 
@@ -24,15 +34,13 @@ const TagsPage = ({ notes, allTags, onSelectNote, onCreateTag }) => {
     )
     .filter(note => 
       note.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      note.content?.toLowerCase().includes(searchQuery.toLowerCase())
+      stripHtml(note.content).toLowerCase().includes(searchQuery.toLowerCase())
     )
   : [];
 
-
   return (
-    <div className="h-screen bg-[#415A77] relative flex flex-col" >
 
-     
+    <div className="h-screen bg-[#415A77] relative flex flex-col">
 
       {!selectedTag && (
         <>
@@ -69,7 +77,7 @@ const TagsPage = ({ notes, allTags, onSelectNote, onCreateTag }) => {
                 </button>
               ))
             ) : (
-              <p className='text-center text-gray-300 mt-12'>No tags yet. Create one above.</p>
+              <p className='text-center text-gray-400 mt-12'>No tags yet. Create one above.</p>
             )}
           </div>
         </>
@@ -119,8 +127,8 @@ const TagsPage = ({ notes, allTags, onSelectNote, onCreateTag }) => {
                 onClick={() => onSelectNote(note)}
                 className='w-full border-b border-gray-400 py-4 px-3 text-[#1A1B25] cursor-pointer'
               >
-                <h3 className='font-semibold text-lg'>{note.title || 'Untitled'}</h3>
-                <p className='text-sm text-gray-900 mt-1 line-clamp-2'>{note.content}</p>
+                <h3 className='font-semibold text-lg'>{(truncate(note.title, 20)) || 'Untitled'}</h3>
+                <p className='text-sm text-gray-900 mt-1 line-clamp-2'>{truncate(stripHtml(note.content), 50) || 'No content'}</p>
               </div>
             ))
           ) : (

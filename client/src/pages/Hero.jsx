@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { motion } from "framer-motion"
-import avatar from '../assets/undraw_taking-notes_oyqz.svg';
+import landingImage from '../assets/landingpage_image.jpg';
 
 const TypeWriterText =({ text, delay = 0}) => {
   const [displayText, setDisplayText] = useState('');
@@ -61,21 +61,21 @@ const TypeWriterText =({ text, delay = 0}) => {
 const Hero = () => {
 
   return (
-    <div>
+    <div style={{ background: 'radial-gradient(circle at top left, rgba(65, 90, 119, 0.25), transparent 60%)' }}>
       <Navbar />
       <motion.div
         initial={{ opacity: 0, y: 60 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.2  }}
       >
-        <h1 className="text-center text-[32px] lg:text-5xl md:text-[40px] mt-15 p-2"><span className="font-bold text-[#01A1B25]">Your</span> thoughts. Organised<span className="font-bold text-[#778DA9]"><TypeWriterText text=" Beautifully." delay={160} /></span></h1>
-        <p className="text-center md:mt-2 mt-0 md:text-xl text-sm p-2">SmartyNote helps students, creators, and professionals organize ideas, tasks, and notes without clutter.</p>
+        <h1 className="text-center text-[30px] lg:text-5xl md:text-[30px] md:mt-22 lg:mt-12 mt-12"><span className="font-bold text-[#01A1B25]">Your</span> thoughts. Organised<span className="font-bold text-[#778DA9]"> Beauti<TypeWriterText text="fully." delay={260} /></span></h1>
+        <p className="text-center md:mt-2 mt-0 md:text-sm text-sm">SmartyNote helps students, creators, and professionals organize ideas, tasks, and notes without clutter.</p>
       </motion.div>
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-         className="flex items-center justify-center gap-4 md:mt-12 mt-3">
+         className="flex items-center justify-center gap-4 md:mt-10 mt-8">
        <motion.button
         whileHover={{ scale: 1.12 }}
         whileTap={{ scale: 0.95 }}
@@ -92,8 +92,8 @@ const Hero = () => {
          <Link to="/register" className='text-white'>Get Started</Link>
        </motion.button>
       </motion.div>
-      <div className="flex justify-center">
-        <img src={avatar} alt="Avatar" width="700" height="500" className="mt-8 p-4" />
+      <div className="flex justify-center mt-10 md:mt-30ß shadow-[0_4px_6px_rgba(0,0,0,0.1)]">
+        <img src={landingImage} alt="Landing" width="1200" height="300"  />
       </div>
     </div>
       
