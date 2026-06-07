@@ -42,7 +42,7 @@ const archivedCount = notes.filter(
 
       <div className="flex flex-col items-center gap-6">
         <div>
-          <h1 className="text-3xl font-semibold text-[#1A1B25] mb-2">{getGreeting()}, {user?.name?.split(' ')[0] || 'there'} 👋!</h1>
+          <h1 className="text-2xl md:text-3xl font-semibold text-[#1A1B25] mb-2">{getGreeting()}, {user?.name?.split(' ')[0] || 'there'} 👋!</h1>
           <p className="text-gray-400 text-sm">Ready to capture your ideas?</p>
         </div>
 
@@ -57,8 +57,8 @@ const archivedCount = notes.filter(
         
       </div>
 
-
-      <div className="grid grid-cols-2 gap-4 w-full">
+      {/* md screeens above */}
+      <div className="hidden md:grid grid-cols-2 gap-4 w-full">
 
         <button
          onClick={() => setActiveView('notes')}
@@ -109,6 +109,64 @@ const archivedCount = notes.filter(
           <div className="flex flex-col items-start">
             <p className="text-xl font-bold text-[#1A1B25]">{allTags.length}</p>
             <p className="text-xs text-gray-400 font-medium">Tag Notes</p>
+          </div>
+        </button>
+      
+      </div>
+
+     {/* Mobile screens */}
+      <div className="md:hidden grid grid-cols-2 gap-4 w-full ">
+
+        <button
+         onClick={() => setActiveView('notes')}
+         className="bg-[#415A77]/20 rounded-md p-4 shadow-full flex flex-col items-center gap-3"
+        >
+          <div className="bg-[#2d5be3]/20 p-3 rounded-full w-11 h-11">
+            <IoMdClock  className="text-xl text-[#2d5be3]" />
+          </div>
+           
+          <div className="flex flex-col items-center gap-1">
+            <p className="text-sm font-bold text-[#1A1B25]">{recentNotes}</p>
+            <p className="text-sm text-gray-400 font-medium"> Recent Notes<br /> (7 days)</p>
+          </div>
+        </button>
+
+        <button
+         onClick={() => setActiveView('notes')}
+         className="bg-[#415A77]/20 rounded-md p-6 shadow-full flex flex-col items-center gap-3"
+        >
+          <div className="bg-[#2d5be3]/20 p-3 rounded-full w-11 h-11">
+            <MdPushPin className="text-xl text-[#2d5be3]" />
+          </div>
+          <div className="flex flex-col items-center gap-1">
+            <p className="text-sm font-bold text-[#1A1B25]">{pinnedCount}</p>
+            <p className="text-sm text-gray-400 font-medium"> Pinned Notes</p>
+          </div>
+        </button>
+
+        <button
+         onClick={() => setActiveView('archived')}
+         className="bg-[#415A77]/20 rounded-md p-6 shadow-full flex flex-col items-center gap-3"
+        >
+          <div className="bg-[#2d5be3]/20 p-3 rounded-full w-11 h-11">
+            <FaArchive  className="text-xl text-[#2d5be3]" />
+          </div>
+          <div className="flex flex-col items-center gap-1">
+            <p className="text-xl font-bold text-[#1A1B25]">{archivedCount}</p>
+            <p className="text-sm text-gray-400 font-medium"> Archived Notes</p>
+          </div>
+        </button>
+
+        <button
+         onClick={() => setActiveView('tags')}
+          className="bg-[#415A77]/20 rounded-md p-6 shadow-full flex flex-col items-center gap-3"
+        >
+          <div className="bg-[#2d5be3]/20 p-3 rounded-full w-11 h-11">
+            <FaTag className="text-xl text-[#2d5be3]" />
+          </div>
+          <div className="flex flex-col items-center gap-1">
+            <p className="text-xl font-bold text-[#1A1B25]">{allTags.length}</p>
+            <p className="text-sm text-gray-400 font-medium"> Tag Notes</p>
           </div>
         </button>
       
