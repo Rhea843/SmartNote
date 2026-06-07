@@ -5,11 +5,12 @@ export const createTag = async (req, res) => {
   try {
     const { name } = req.body;
     const userId = req.user.id;
+    
 
 
     const existing = await pool.query(
       `SELECT * FROM tags WHERE name = $1 AND user_id = $2`,
-      [name]
+      [name, userId]
     );
 
     if (existing.rows.length > 0) {

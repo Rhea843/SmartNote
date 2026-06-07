@@ -27,6 +27,13 @@ const TagsPage = ({ notes, allTags, onSelectNote, onCreateTag }) => {
    return doc.body.textContent || '';
   };
 
+  const handleButtonCreate = async () => {
+  if (tagInput.trim()) {
+    await onCreateTag(tagInput.trim());
+    setTagInput('');
+  }
+};
+
   const filteredNotes = selectedTag
     ? notes
     .filter(note => 
@@ -49,15 +56,19 @@ const TagsPage = ({ notes, allTags, onSelectNote, onCreateTag }) => {
           <h1 className='font-semibold text-center text-2xl tracking-wider px-4 pt-4 mb-2'>TAGS</h1>
 
           {/* create tag input */}
-          <div className="relative px-4 pb-2 shrink-0">
+          <div className="relative px-4 pb-2 shrink-0 flex gap-2">
             <input
               type="text"
               value={tagInput}
               onChange={(e) => setTagInput(e.target.value)}
               onKeyDown={handleCreateTag}
-              placeholder="Add new tag here..."
+              placeholder="Type new tag here..."
               className="bg-[#fafafa] w-full rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-[14px]"
             />
+
+            <button onClick={handleButtonCreate} className="bg-[#1B263B] border border-black text-white text-sm px-4 py-2 rounded-lg shrink-0 hover:bg-[#0D1B2A] transition-colors">
+              Add Tag
+            </button>
           </div>
 
           {/* tag list */}
@@ -86,26 +97,23 @@ const TagsPage = ({ notes, allTags, onSelectNote, onCreateTag }) => {
       {/* notes for selected tag */}
       {selectedTag && (
         <div className='overflow-y-auto flex-1'>
-          <div className='flex items-center gap-15 md:gap-65 lg:hidden'>
-            <div className='flex items-center gap-2 p-3 lg:hidden'>
-              <button
-              onClick={() => {
-                setSelectedTag(null);
-              setSearchQuery('');
-              }}
-              >
-                <IoMdArrowRoundBack size={18} />
-              </button>
-              <span className='font-semibold text-sm'>Back</span>
-            </div>
-
-            <div>
-              <h1 className='font-semibold text-lg'>{selectedTag.name} TAG</h1>
-            </div>
+          
+          <div className='flex items-center gap-2 p-3 mt-2'>
+            <button
+            onClick={() => {
+              setSelectedTag(null);
+            setSearchQuery('');
+            }}
+            >
+              <IoMdArrowRoundBack size={18} />
+            </button>
+            <span className='font-semibold text-sm'>Back</span>
           </div>
-          <div className='hidden lg:block text-center p-3'>
-              <h1 className='font-semibold text-lg'>{selectedTag.name} TAG</h1>
-            </div>
+
+          <div>
+            <h1 className='font-semibold text-lg text-center'>{selectedTag.name.toUpperCase()} TAG</h1>
+          </div>
+          
 
           {/* search input */}
           <div className="relative px-4 py-2 shrink-0 border-b border-gray-400 ">
