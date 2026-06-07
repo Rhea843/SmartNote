@@ -21,6 +21,8 @@ const NoteForm = ({ selectedNote, onCreate, onUpdate, moveToTrash, onClose, onAd
 
   const formRef = useRef(null)
   const titleRef = useRef(title);
+  const isDirtyRef = useRef(false); 
+  const saveStatusTimeoutRef = useRef(null);
 
   const moreMenuRef = useRef(null);
   const closeMoreMenu = useCallback(() => setActiveMenu(null), []);
@@ -32,9 +34,7 @@ const NoteForm = ({ selectedNote, onCreate, onUpdate, moveToTrash, onClose, onAd
 
   const editor = useEditor({
     extensions: [
-      StarterKit.configure({
-        underline: false, 
-      }),
+      StarterKit.configure({ underline: false }),
       Underline,
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
     ],
@@ -44,68 +44,94 @@ const NoteForm = ({ selectedNote, onCreate, onUpdate, moveToTrash, onClose, onAd
         class: 'min-h-[400px] p-4 focus:outline-none [&_h1]:text-3xl [&_h1]:font-bold [&_h2]:text-2xl [&_h2]:font-bold [&_h3]:text-xl [&_h3]:font-bold [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6',
       },
     },
+    onUpdate: () => {
+      isDirtyRef.current = true; // mark as dirty when editor content changes
+    },
   });
+
+  // Mark dirty when title changes
+  useEffect(() => {
+    isDirtyRef.current = true;
+  }, [title]);
 
   // Sync editor content when selectedNote changes
   useEffect(() => {
-  if (!editor) return;
-
-  editor.commands.setContent(selectedNote?.content || '');
-
+    if (!editor) return;
+    editor.commands.setContent(selectedNote?.content || '');
     setTitle(selectedNote?.title || '');
     titleRef.current = selectedNote?.title || '';
+    isDirtyRef.current = false; 
   }, [editor, selectedNote?.id]);
 
-  // Click outside → save and close
+  
+  useEffect(() => { titleRef.current = title; }, [title]);
+
+ 
   useEffect(() => {
-    const handleClickOutside = async (event) => {
+    const interval = setInterval(async () => {
+      if (!isDirtyRef.current) return;
+
+      const latestTitle = titleRef.current;
+      const latestContent = editor?.getHTML() ?? '';
+
+      try {
+        setSaveStatus('saving');
+
+        if (selectedNote) {
+          await onUpdate(selectedNote.id, latestTitle, latestContent);
+        } else {
+          if (latestTitle || latestContent !== '<p></p>') {
+            await onCreate(latestTitle, latestContent);
+          }
+        }
+
+        isDirtyRef.current = false;
+        setSaveStatus('saved');
+
+        // clear "saved" after 2 seconds
+        clearTimeout(saveStatusTimeoutRef.current);
+        saveStatusTimeoutRef.current = setTimeout(() => setSaveStatus(''), 2000);
+
+      } catch (error) {
+        setSaveStatus('error');
+      }
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [selectedNote, onCreate, onUpdate, editor]);
+
+  // Save on unmount if still dirty
+  useEffect(() => {
+    return () => {
+      clearTimeout(saveStatusTimeoutRef.current);
+      if (!isDirtyRef.current) return;
+      const latestTitle = titleRef.current;
+      const latestContent = editor?.getHTML() ?? '';
+      if (selectedNote) {
+        onUpdate(selectedNote.id, latestTitle, latestContent);
+      } else if (latestTitle || latestContent !== '<p></p>') {
+        onCreate(latestTitle, latestContent);
+      }
+    };
+  }, []);
+
+  // Click outside → close (saving is handled by autosave)
+  useEffect(() => {
+    const handleClickOutside = (event) => {
       if (event.target.closest('[data-no-close]')) return;
       if (formRef.current && !formRef.current.contains(event.target)) {
-
-        const latestTitle = titleRef.current;
-        const latestContent = editor?.getHTML() ?? '';
-
-
-        try {
-          setSaveStatus('saving');
-
-          if (selectedNote) {
-            await onUpdate(
-              selectedNote.id,
-              latestTitle,
-              latestContent
-            );
-
-            setSaveStatus('saved');
-
-          } else {
-            if (
-              latestTitle ||
-              latestContent !== '<p></p>'
-            ) {
-              await onCreate(
-                latestTitle,
-                latestContent
-              );
-            }
-          }
-        } catch(error){
-          setSaveStatus('error');
-        }
+        onClose();
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [selectedNote, onCreate, onUpdate, onClose, editor]);
+  }, [onClose]);
 
   // Clock
   useEffect(() => {
     const timer = setInterval(() => setCurrentDate(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
-
-  // Keep titleRef in sync
-  useEffect(() => { titleRef.current = title; }, [title]);
 
   const formatDate = (date) => date.toLocaleDateString('en-US', {
     month: 'short', day: 'numeric', year: 'numeric',
@@ -115,7 +141,6 @@ const NoteForm = ({ selectedNote, onCreate, onUpdate, moveToTrash, onClose, onAd
   return (
     <div ref={formRef} className='flex flex-col relative w-full h-full'>
 
-      {/* More menu button */}
       <button
         onClick={(e) => { e.stopPropagation(); setActiveMenu(activeMenu === 'form' ? null : 'form') }}
         className='absolute top-4 lg:right-10 right-6 bg-[#3A506A] p-2 rounded-full w-10 h-10 flex items-center justify-center'
@@ -123,21 +148,19 @@ const NoteForm = ({ selectedNote, onCreate, onUpdate, moveToTrash, onClose, onAd
         <MdMoreHoriz className="text-2xl" />
       </button>
 
-      {/* Back button (mobile) */}
       <button onClick={onClose} className="lg:hidden absolute top-4 md:left-8 left-4 text-2xl">
         <IoArrowBack />
       </button>
 
-      {/* Date + tags + title */}
       <div className='flex flex-col items-center w-full mt-14 px-4'>
         <p className="text-sm text-gray-400">
           {selectedNote?.updated_at ? formatDate(new Date(selectedNote.updated_at)) : formatDate(currentDate)}
         </p>
 
-        <p className="text-xs text-green-500 mt-1">
-          {saveStatus === 'saving' && 'Saving...'}
-          {saveStatus === 'saved' && '✓ Saved'}
-          {saveStatus === 'error' && 'Failed to save'}
+        <p className="text-xs mt-1 h-4">
+          {saveStatus === 'saving' && <span className="text-yellow-400">Saving...</span>}
+          {saveStatus === 'saved' && <span className="text-green-500">✓ Saved</span>}
+          {saveStatus === 'error' && <span className="text-red-400">Failed to save</span>}
         </p>
 
         {selectedNote?.tags?.length > 0 && (
@@ -159,13 +182,11 @@ const NoteForm = ({ selectedNote, onCreate, onUpdate, moveToTrash, onClose, onAd
         />
       </div>
 
-      {/* Toolbar + Editor */}
       <div className='mt-4 flex flex-col flex-1'>
         <Toolbar editor={editor} />
         <EditorContent editor={editor} className="flex-1 overflow-y-auto" />
       </div>
 
-      {/* Tag panel */}
       {showTagPanel && selectedNote && (
         <div ref={tagPanelRef} className='bg-[#415A77] rounded-lg shadow-[0_4px_14px_rgba(0,0,0,0.25)] absolute top-15 lg:right-15 right-9 w-48 z-50 flex flex-col p-3'>
           <p className='text-sm font-semibold mb-2'>Add to tag</p>
@@ -184,7 +205,6 @@ const NoteForm = ({ selectedNote, onCreate, onUpdate, moveToTrash, onClose, onAd
         </div>
       )}
 
-      {/* More menu dropdown */}
       {activeMenu === 'form' && (
         <div ref={moreMenuRef} className='bg-[#415A77] rounded-lg shadow-[0_4px_14px_rgba(0,0,0,0.25)] absolute top-15 lg:right-15 right-9 w-48 z-50 flex flex-col'>
           <button
