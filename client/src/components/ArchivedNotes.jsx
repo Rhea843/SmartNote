@@ -76,7 +76,7 @@ const ArchivedNotes = ({ notes, moveToTrash, onSelectNote, onUnarchive, isLoadin
             </p>
           ) : notes.length === 0 ? (
             <p className="text-center text-gray-400 mt-12">
-              No notes yet. Create your first note!
+              archived notes will appear here.
             </p>
           ) : filteredNotes.length === 0 ? (
             <p className="text-center text-gray-400 mt-12">

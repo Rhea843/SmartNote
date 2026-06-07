@@ -83,7 +83,7 @@ const TrashNote = ({ notes, onDelete, onSelectNote, onRestore, isLoading, error 
             </p>
           ) : notes.length === 0 ? (
             <p className="text-center text-gray-400 mt-12">
-              No notes yet. Create your first note!
+              Notes moved to trash will appear here.
             </p>
           ) : filteredNotes.length === 0 ? (
             <p className="text-center text-gray-400 mt-12">
