@@ -14,6 +14,7 @@ import API_URL from '../api/api.js';
 
 
 
+
 const Dashboard = () => {
 const [notes, setNotes] = useState([]);
 const [showForm, setShowForm] = useState(false);
@@ -322,6 +323,7 @@ const createTag = async (name) => {
                 onUpdate={updateNote} 
                 onTogglePin={togglePin}
                 onToggleArchive={toggleArchive}
+                onBack={() => setActiveView(null)}
                 onSelectNote={(note) => {     
                 setSelectedNote(note);
                 setShowForm(true);
@@ -343,6 +345,7 @@ const createTag = async (name) => {
                 moveToTrash={moveToTrash} 
                 onUpdate={updateNote} 
                 onUnarchive={toggleArchive}
+                onBack={() => setActiveView(null)}
                 onSelectNote={(note) => {     
                 setSelectedNote(note);
                 setShowForm(true);
@@ -362,6 +365,7 @@ const createTag = async (name) => {
                 error={error}
                 onDelete={deleteNote}
                 onRestore={restoreNote}
+                onBack={() => setActiveView(null)}
                 onSelectNote={(note) => {
                 setSelectedNote(note);
                 setShowForm(true);
@@ -379,6 +383,7 @@ const createTag = async (name) => {
                 notes={notes.filter(note => !note.deleted_at)}
                 allTags={allTags}
                 onCreateTag={createTag}
+                onBack={() => setActiveView(null)}
                 onSelectNote={(note) => {
                   setSelectedNote(note);
                   setShowForm(true);
@@ -418,6 +423,7 @@ const createTag = async (name) => {
                     user={user}
                     notes={notes}
                     allTags={allTags}
+                    setActiveView={setActiveView} 
                     onNewNote={() => {
                       setSelectedNote(null);
                       setShowForm(true);

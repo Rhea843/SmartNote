@@ -76,21 +76,21 @@ const Hero = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
          className="flex items-center justify-center gap-4 md:mt-10 mt-8">
-       <motion.button
+       <motion.div
         whileHover={{ scale: 1.12 }}
         whileTap={{ scale: 0.95 }}
         className='border border-[#1A1B25] px-4.5 py-3 rounded-[5px] shadow-lg'
         >
          <Link to="#" className='text-[#1A1B25]'>Learn more</Link>
-       </motion.button>
+       </motion.div>
 
-       <motion.button
+       <motion.div
         whileHover={{ scale: 1.12 }}
         whileTap={{ scale: 0.95 }}
         className='bg-[#1A1B25] px-4.5 py-3.5 rounded-[5px]'
         >
          <Link to="/register" className='text-white'>Get Started</Link>
-       </motion.button>
+       </motion.div>
       </motion.div>
       <div className="flex justify-center mt-10 md:mt-30ß shadow-[0_4px_6px_rgba(0,0,0,0.1)]">
         <img src={landingImage} alt="Landing" width="1200" height="300"  />

@@ -17,12 +17,10 @@ const NoteForm = ({ selectedNote, onCreate, onUpdate, moveToTrash, onClose, onAd
   const [activeMenu, setActiveMenu] = useState(null);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [showTagPanel, setShowTagPanel] = useState(false);
-  const [saveStatus, setSaveStatus] = useState('');
 
   const formRef = useRef(null)
   const titleRef = useRef(title);
   const isDirtyRef = useRef(false); 
-  const saveStatusTimeoutRef = useRef(null);
 
   const moreMenuRef = useRef(null);
   const closeMoreMenu = useCallback(() => setActiveMenu(null), []);
@@ -68,42 +66,41 @@ const NoteForm = ({ selectedNote, onCreate, onUpdate, moveToTrash, onClose, onAd
 
  
   useEffect(() => {
-    const interval = setInterval(async () => {
-      if (!isDirtyRef.current) return;
+  const interval = setInterval(async () => {
+    if (!isDirtyRef.current) return;
 
-      const latestTitle = titleRef.current;
-      const latestContent = editor?.getHTML() ?? '';
+    const latestTitle = titleRef.current;
+    const latestContent = editor?.getHTML() ?? '';
 
-      try {
-        setSaveStatus('saving');
-
-        if (selectedNote) {
-          await onUpdate(selectedNote.id, latestTitle, latestContent);
-        } else {
-          if (latestTitle || latestContent !== '<p></p>') {
-            await onCreate(latestTitle, latestContent);
-          }
+    try {
+      if (selectedNote) {
+        await onUpdate(
+          selectedNote.id,
+          latestTitle,
+          latestContent
+        );
+      } else {
+        if (latestTitle || latestContent !== '<p></p>') {
+          await onCreate(
+            latestTitle,
+            latestContent
+          );
         }
-
-        isDirtyRef.current = false;
-        setSaveStatus('saved');
-
-        // clear "saved" after 2 seconds
-        clearTimeout(saveStatusTimeoutRef.current);
-        saveStatusTimeoutRef.current = setTimeout(() => setSaveStatus(''), 2000);
-
-      } catch (error) {
-        setSaveStatus('error');
       }
-    }, 3000);
 
-    return () => clearInterval(interval);
-  }, [selectedNote, onCreate, onUpdate, editor]);
+      isDirtyRef.current = false;
+    } catch (error) {
+      console.error(error);
+    }
+  }, 3000);
+
+  return () => clearInterval(interval);
+}, [selectedNote, onCreate, onUpdate, editor]);
+
 
   // Save on unmount if still dirty
   useEffect(() => {
     return () => {
-      clearTimeout(saveStatusTimeoutRef.current);
       if (!isDirtyRef.current) return;
       const latestTitle = titleRef.current;
       const latestContent = editor?.getHTML() ?? '';
@@ -157,11 +154,6 @@ const NoteForm = ({ selectedNote, onCreate, onUpdate, moveToTrash, onClose, onAd
           {selectedNote?.updated_at ? formatDate(new Date(selectedNote.updated_at)) : formatDate(currentDate)}
         </p>
 
-        <p className="text-xs mt-1 h-4">
-          {saveStatus === 'saving' && <span className="text-yellow-400">Saving...</span>}
-          {saveStatus === 'saved' && <span className="text-green-500">✓ Saved</span>}
-          {saveStatus === 'error' && <span className="text-red-400">Failed to save</span>}
-        </p>
 
         {selectedNote?.tags?.length > 0 && (
           <div className='flex flex-wrap gap-1 mt-4'>

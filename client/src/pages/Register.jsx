@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import API_URL from '../api/api';
   
@@ -160,7 +161,7 @@ const Register = () => {
       <div 
         className='flex-1 flex items-center justify-center'
         style={{
-          background: 'radial-gradient(circle, rgba(0,0,0,0.12) 1px, transparent 1px), white',
+          background: 'radial-gradient(circle, rgba(0,0,0,0.12) 1px, transparent 1px), radial-gradient(circle at top left, rgba(65, 90, 119, 0.25), transparent 60%)',
           backgroundSize: '24px 24px, 100% 100%'
         }}
       >
@@ -168,11 +169,11 @@ const Register = () => {
           <h1 className='text-3xl md:text-4xl text-center mt-2 font-semibold'>Register</h1>
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div className='flex flex-col gap-2 mt-2'>
-            <label htmlFor='name'>Name:</label>
+            <label htmlFor='name'>Username:</label>
               <input 
                 type='text'
                 name='name' 
-                placeholder='name'
+                placeholder='Username'
                 value={formData.name}
                 onChange={handleChange}
                 className="border p-3 rounded-md"
@@ -196,7 +197,7 @@ const Register = () => {
                 className="border p-3 rounded-md"
               />
               <button type="submit" className='mt-4 bg-[#1A1B25] text-white p-3 rounded-md'>Register</button>
-              <p className='text-[15px] mt-1'>Already have an account? <a href="/login" className="text-blue-500 underline">Login</a></p>
+              <p className='text-[15px] mt-1'>Already have an account? <Link to="/login" className="text-blue-500 underline">Login</Link></p>
 
               {error && <p className='text-red-500 pb-1'>{error}</p>}
             </div>

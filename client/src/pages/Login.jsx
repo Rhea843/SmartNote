@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom'
 import API_URL from '../api/api';
 
 
@@ -186,7 +187,7 @@ const Login = () => {
               className="border p-3 rounded-md"
             />
             <button type="submit" className='mt-4 bg-[#1A1B25] text-white p-3 rounded-md'>Login</button>
-            <p className='text-[15px] mt-1'>Don't have an account? <a href="/register" className="text-blue-500 underline">Register</a></p>
+            <p className='text-[15px] mt-1'>Don't have an account? <Link to="/register" className="text-blue-500 underline">Register</Link></p>
           </div>
         </form>
       </div>

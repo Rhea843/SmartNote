@@ -5,6 +5,7 @@ import { TiPlus } from "react-icons/ti";
 import { MdOutlineEdit } from "react-icons/md";
 import { MdOutlineDelete } from "react-icons/md";
 import { MdOutlinePushPin } from "react-icons/md";
+import { IoMdArrowRoundBack } from "react-icons/io";
 import useClickOutside from '../hooks/useClickOutside';
 import { BsFillPinFill } from "react-icons/bs";
 import { FiArchive } from "react-icons/fi";
@@ -12,7 +13,7 @@ import { IoPricetagsOutline } from "react-icons/io5";
 
 
 
-const NoteList = ({ notes, moveToTrash, onSelectNote, onTogglePin, onToggleArchive, isLoading, error }) => {
+const NoteList = ({ notes, moveToTrash, onSelectNote, onTogglePin, onToggleArchive, isLoading, error, onBack }) => {
   const [activeMenu, setActiveMenu] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [showTooltip, setShowTooltip] = useState(false);
@@ -49,6 +50,18 @@ const NoteList = ({ notes, moveToTrash, onSelectNote, onTogglePin, onToggleArchi
   return (
     <div className="h-screen bg-[#415A77] relative flex flex-col">
 
+      <div className='flex items-center gap-1 p-3 mt-2 lg:hidden'>
+        <button
+        onClick={() => {
+          onBack();
+          setSearchQuery('');
+        }}
+        >
+          <IoMdArrowRoundBack size={18} />
+        </button>
+        <span className='font-semibold text-sm'>Back</span>
+      </div> 
+
       <div data-no-close="true" className="relative p-4 shrink-0">
         <IoSearch className="absolute left-7 top-1/2 -translate-y-1/2 text-gray-500 text-[16px]" />
         <input
@@ -62,7 +75,7 @@ const NoteList = ({ notes, moveToTrash, onSelectNote, onTogglePin, onToggleArchi
 
      {/* header */}
       <div className='p-2 border-b border-gray-400'>
-        <h1 className='font-bold text-left text-lg tracking-wider '>ALL NOTES</h1>
+        <h1 className='font-bold text-center text-lg tracking-wider '>ALL NOTES</h1>
       </div>
       
       {/* note list */}
@@ -195,7 +208,7 @@ const NoteList = ({ notes, moveToTrash, onSelectNote, onTogglePin, onToggleArchi
                     className='flex items-center gap-3 px-3 py-3 border-b border-gray-500 w-full'
                   >
                     <FiArchive className='text-xl' />
-                    {note.is_pinned
+                    {note.is_archived
                         ? 'Unarchive'
                         : 'Archive'
                       }

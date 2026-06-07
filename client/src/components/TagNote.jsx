@@ -4,7 +4,7 @@ import { IoMdArrowRoundBack } from "react-icons/io";
 import { IoSearch } from "react-icons/io5";
 
 
-const TagsPage = ({ notes, allTags, onSelectNote, onCreateTag }) => {
+const TagsPage = ({ notes, allTags, onSelectNote, onCreateTag, onBack }) => {
   const [selectedTag, setSelectedTag] = useState(null);
   const [tagInput, setTagInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -53,7 +53,19 @@ const TagsPage = ({ notes, allTags, onSelectNote, onCreateTag }) => {
         <>
 
          {/* header */}
-          <h1 className='font-semibold text-center text-2xl tracking-wider px-4 pt-4 mb-2'>TAGS</h1>
+
+          <div className='flex items-center gap-1 px-3 mt-6 lg:hidden'>
+            <button
+            onClick={() => {
+             onBack();
+            }}
+            >
+              <IoMdArrowRoundBack size={18} />
+            </button>
+            <span className='font-semibold text-sm'>Back</span>
+          </div>
+
+          <h1 className='font-semibold text-center text-2xl tracking-wider px-4 pt-2 mb-2'>TAGS</h1>
 
           {/* create tag input */}
           <div className="relative px-4 pb-2 shrink-0 flex gap-2">
@@ -101,8 +113,8 @@ const TagsPage = ({ notes, allTags, onSelectNote, onCreateTag }) => {
           <div className='flex items-center gap-2 p-3 mt-2'>
             <button
             onClick={() => {
-              setSelectedTag(null);
-            setSearchQuery('');
+             setSelectedTag(null);
+             setSearchQuery('');
             }}
             >
               <IoMdArrowRoundBack size={18} />

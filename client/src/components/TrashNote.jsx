@@ -3,10 +3,11 @@ import { IoSearch } from "react-icons/io5";
 import { IoMdMore } from "react-icons/io";
 import { MdOutlineDelete } from "react-icons/md";
 import { MdRestoreFromTrash } from "react-icons/md";
+import { IoMdArrowRoundBack } from "react-icons/io";
 import useClickOutside from '../hooks/useClickOutside';
 
 
-const TrashNote = ({ notes, onDelete, onSelectNote, onRestore, isLoading, error }) => {
+const TrashNote = ({ notes, onDelete, onSelectNote, onRestore, isLoading, error, onBack }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeMenu, setActiveMenu] = useState(null);
   const menuRef = useRef(null);
@@ -50,6 +51,19 @@ const TrashNote = ({ notes, onDelete, onSelectNote, onRestore, isLoading, error 
   return (
     <div className="h-screen bg-[#415A77] relative flex flex-col">
 
+      <div className='flex items-center gap-1 p-3 mt-2 lg:hidden'>
+        <button
+        onClick={() => {
+          onBack();
+        }}
+        >
+          <IoMdArrowRoundBack size={18} />
+        </button>
+        <span className='font-semibold text-sm'>Back</span>
+      </div> 
+
+      <h1 className='font-semibold text-center text-lg tracking-wider'>TRASH</h1>
+
       <div data-no-close="true" className="relative p-4 shrink-0">
         <IoSearch className="absolute left-7 top-1/2 -translate-y-1/2 text-gray-500 text-[16px]" />
         <input
@@ -61,9 +75,8 @@ const TrashNote = ({ notes, onDelete, onSelectNote, onRestore, isLoading, error 
         />
       </div>
 
-      <div className='p-2 border-b border-gray-400'>
-        <h1 className='font-semibold text-left text-lg tracking-wider'>TRASH</h1>
-        <p className='text-xs text-gray-400 mt-1'>Notes are permanently deleted after 30 days</p>
+      <div className='px-4 py-2 border-b border-gray-400'>
+        <p className='text-xs text-gray-400'>Notes are permanently deleted after 30 days</p>
       </div>
 
       <div className='overflow-y-auto flex-1 pb-36 lg:pb-20 scrollbar-thin scrollbar-track-[#415A77] scrollbar-thumb-[#778DA9] hover:scrollbar-thumb-[#1B263B]'>

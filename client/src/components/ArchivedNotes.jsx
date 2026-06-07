@@ -3,11 +3,12 @@ import { IoSearch } from "react-icons/io5";
 import { IoMdMore } from "react-icons/io";
 import { MdOutlineEdit } from "react-icons/md";
 import { MdOutlineDelete } from "react-icons/md";
+import { IoMdArrowRoundBack } from "react-icons/io";
 import useClickOutside from '../hooks/useClickOutside';
 import { RiInboxUnarchiveLine } from "react-icons/ri";
 
 
-const ArchivedNotes = ({ notes, moveToTrash, onSelectNote, onUnarchive, isLoading, error }) => {
+const ArchivedNotes = ({ notes, moveToTrash, onSelectNote, onUnarchive, isLoading, error, onBack }) => {
   const [activeMenu, setActiveMenu] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const menuRef = useRef(null);
@@ -42,6 +43,17 @@ const ArchivedNotes = ({ notes, moveToTrash, onSelectNote, onUnarchive, isLoadin
   return (
    <div className="h-screen bg-[#415A77] relative flex flex-col">
 
+    <div className='flex items-center gap-1 p-3 mt-2 lg:hidden'>
+      <button
+      onClick={() => {
+        onBack();
+      }}
+      >
+        <IoMdArrowRoundBack size={18} />
+      </button>
+      <span className='font-semibold text-sm'>Back</span>
+    </div> 
+
       <div data-no-close="true" className="relative p-4 shrink-0">
         <IoSearch className="absolute left-7 top-1/2 -translate-y-1/2 text-gray-500 text-[16px]" />
         <input
@@ -55,7 +67,7 @@ const ArchivedNotes = ({ notes, moveToTrash, onSelectNote, onUnarchive, isLoadin
       
       {/* header */}
       <div className='p-2 border-b border-gray-400'>
-        <h1 className='font-semibold text-left text-lg tracking-wider'>ARCHIVED NOTES</h1>
+        <h1 className='font-semibold text-center text-lg tracking-wider'>ARCHIVED NOTES</h1>
       </div>
         
      {/* archived notes */}
