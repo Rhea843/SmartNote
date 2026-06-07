@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import API_URL from '../api/api';
 
 
 const TypeWriterText =({ text, delay = 0}) => {
@@ -80,7 +81,7 @@ const Login = () => {
     try{
 
       const response = await fetch(
-        'http://localhost:8080/api/auth/login',
+        `${API_URL}/api/auth/login`,
         {
           method: 'POST',
           

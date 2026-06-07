@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import API_URL from '../api/api';
   
 const TypeWriterText = ({ text, delay = 0}) => {
   const [displayText, setDisplayText] = useState('');
@@ -77,7 +78,7 @@ const Register = () => {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:8080/api/auth/register', {
+      const response = await fetch(`${API_URL}/api/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

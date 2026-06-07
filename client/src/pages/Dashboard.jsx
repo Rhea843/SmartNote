@@ -9,6 +9,7 @@ import ArchivedNotes from '../components/ArchivedNotes.jsx';
 import TrashNote from '../components/TrashNote.jsx';
 import TagNote from'../components/TagNote.jsx';
 import WelcomeScreen from '../components/WelcomeScreen.jsx';
+import API_URL from '../api/api.js';
 
 
 
@@ -48,7 +49,7 @@ const getNotes = useCallback(async () => {
     setIsLoading(true);
     setError(null);
 
-    const res = await fetch('http://localhost:8080/api/notes', {
+    const res = await fetch(`${API_URL}/api/notes`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -69,7 +70,7 @@ const getNotes = useCallback(async () => {
 }, [token, navigate]);
 
 const createNote =  useCallback(async(title, content) => {
-  const res = await fetch('http://localhost:8080/api/notes', {
+  const res = await fetch(`${API_URL}/api/notes`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -88,7 +89,7 @@ const createNote =  useCallback(async(title, content) => {
 
 
 const deleteNote = async (id) => {
-  await fetch(`http://localhost:8080/api/notes/${id}`, {
+  await fetch(`${API_URL}/api/notes/${id}`, {
     method: "DELETE",
 
     headers:{
@@ -100,7 +101,7 @@ const deleteNote = async (id) => {
 
 
 const updateNote = useCallback(async (id, title, content) => {
-const res = await fetch(`http://localhost:8080/api/notes/${id}`, {
+const res = await fetch(`${API_URL}/api/notes/${id}`, {
   method: "PUT",
   headers: {
     "Content-Type": "application/json",
@@ -118,7 +119,7 @@ const data = await res.json();
 const getUser = useCallback(async () => {
   if (!token) return;
 
-  const res = await fetch('http://localhost:8080/api/auth/me', {
+  const res = await fetch(`${API_URL}/api/auth/me`, {
     headers: {
       'Authorization': `Bearer ${token}`
     }
@@ -137,7 +138,7 @@ const togglePin = async (id) => {
   try{
 
     const res = await fetch(
-      `http://localhost:8080/api/notes/${id}/pin`,
+      `${API_URL}/api/notes/${id}/pin`,
       {
         method: 'PATCH',
         headers: {
@@ -162,7 +163,7 @@ const toggleArchive = async (id) => {
   try{
 
     const res = await fetch(
-      `http://localhost:8080/api/notes/${id}/archive`,
+      `${API_URL}/api/notes/${id}/archive`,
       {
         method: 'PATCH',
         headers: {
@@ -183,7 +184,7 @@ const moveToTrash = async(id) => {
   try{
 
     const res = await fetch(
-      `http://localhost:8080/api/notes/${id}/trash`,
+      `${API_URL}/api/notes/${id}/trash`,
       {
         method: 'PATCH',
         headers: {
@@ -204,7 +205,7 @@ const restoreNote = async (id) => {
   try{
 
     const res = await fetch(
-      `http://localhost:8080/api/notes/${id}/restore`,
+      `${API_URL}/api/notes/${id}/restore`,
       {
         method: 'PATCH',
         headers: {
@@ -222,7 +223,7 @@ const restoreNote = async (id) => {
 };
 
 const getTags = useCallback(async () => {
-  const res = await fetch('http://localhost:8080/api/tags', {
+  const res = await fetch(`${API_URL}/api/tags`, {
     headers: {
       'Authorization': `Bearer ${token}`
     }
@@ -242,7 +243,7 @@ useEffect(() => {
 const addTagToNote = async(noteId, tagId) => {
     console.log('noteId:', noteId, 'tagId:', tagId);
   try{
-    const res = await fetch(`http://localhost:8080/api/notes/${noteId}/tags`, {
+    const res = await fetch(`${API_URL}/api/notes/${noteId}/tags`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -261,7 +262,7 @@ const addTagToNote = async(noteId, tagId) => {
 
 const removeTagFromNote = async (noteId, tagId) => {
   try{
-    const res = await fetch(`http://localhost:8080/api/notes/${noteId}/tags/${tagId}`, {
+    const res = await fetch(`${API_URL}/api/notes/${noteId}/tags/${tagId}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`
@@ -278,7 +279,7 @@ const removeTagFromNote = async (noteId, tagId) => {
 
 const createTag = async (name) => {
   try {
-    const res = await fetch('http://localhost:8080/api/tags', {
+    const res = await fetch(`${API_URL}/api/tags`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

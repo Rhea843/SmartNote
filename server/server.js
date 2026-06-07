@@ -13,7 +13,13 @@ import noteTagRoutes from './routes/noteTags.routes.js';
 const app = express();
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'https://smart-note-eight.vercel.app'
+  ],
+  credentials: true
+}));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/notes', noteRoutes);

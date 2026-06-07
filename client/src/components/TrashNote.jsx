@@ -153,8 +153,8 @@ const TrashNote = ({ notes, onDelete, onSelectNote, onRestore, isLoading, error 
                       }}
                       className='flex items-center gap-2 px-3 py-3'
                     >
-                      <MdOutlineDelete className='text-2xl' />
-                      <p>Delete note</p>
+                      <MdOutlineDelete className='text-2xl text-red-500' />
+                      <p className='text-red-500'>Delete note</p>
                     </button>
                   </div>
                 )}
