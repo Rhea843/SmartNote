@@ -51,7 +51,7 @@ const TrashNote = ({ notes, onDelete, onSelectNote, onRestore, isLoading, error,
   return (
     <div className="h-screen bg-[#415A77] relative flex flex-col">
 
-      <div className='flex items-center gap-1 p-3 mt-2 lg:hidden'>
+      <div className='flex items-center gap-1 p-3 mt-2 text-[#CBD5E1] lg:hidden'>
         <button
         onClick={() => {
           onBack();
@@ -62,7 +62,7 @@ const TrashNote = ({ notes, onDelete, onSelectNote, onRestore, isLoading, error,
         <span className='font-semibold text-sm'>Back</span>
       </div> 
 
-      <h1 className='font-semibold text-center text-lg tracking-wider'>TRASH</h1>
+      <h1 className='font-semibold text-center text-[#E2E8F0] text-lg tracking-wider'>TRASH</h1>
 
       <div data-no-close="true" className="relative p-4 shrink-0">
         <IoSearch className="absolute left-7 top-1/2 -translate-y-1/2 text-gray-500 text-[16px]" />
@@ -75,8 +75,8 @@ const TrashNote = ({ notes, onDelete, onSelectNote, onRestore, isLoading, error,
         />
       </div>
 
-      <div className='px-4 py-2 border-b border-gray-400'>
-        <p className='text-xs text-gray-400'>Notes are permanently deleted after 30 days</p>
+      <div className='px-4 py-2 border-b border-gray-500'>
+        <p className='text-xs text-[#94A3B8]'>Notes are permanently deleted after 30 days</p>
       </div>
 
       <div className='overflow-y-auto flex-1 pb-36 lg:pb-20 scrollbar-thin scrollbar-track-[#415A77] scrollbar-thumb-[#778DA9] hover:scrollbar-thumb-[#1B263B]'>
@@ -95,11 +95,11 @@ const TrashNote = ({ notes, onDelete, onSelectNote, onRestore, isLoading, error,
               {error}
             </p>
           ) : notes.length === 0 ? (
-            <p className="text-center text-gray-400 mt-12">
+            <p className="text-center text-[#94A3B8] mt-12">
               Notes moved to trash will appear here.
             </p>
           ) : filteredNotes.length === 0 ? (
-            <p className="text-center text-gray-400 mt-12">
+            <p className="text-center text-[#94A3B8] mt-12">
               No Notes match your search.
             </p>
           ) : (
@@ -113,19 +113,19 @@ const TrashNote = ({ notes, onDelete, onSelectNote, onRestore, isLoading, error,
                   onSelectNote(note);
                   setActiveMenu(null);
                 }}
-                className="w-full border-b border-gray-400 py-4 text-[#1A1B25] relative"
+                className="w-full border-b border-gray-500 py-4 text-[#1A1B25] relative"
               >
                 <div className="flex item-center justify-between px-3">
-                  <h3 className="font-semibold text-lg">{truncate(note.title, 20)}</h3>
+                  <h3 className="font-semibold text-xl text-[#E2E8F0]">{truncate(note.title, 20)}</h3>
                   <button onClick={(e) => {
                     e.stopPropagation();
                     setActiveMenu(activeMenu === note.id ? null : note.id);
                   }}>
-                    <IoMdMore className="text-3xl" />
+                    <IoMdMore className="text-3xl text-[#CBD5E1]" />
                   </button>
                 </div>
 
-                <p className="text-sm text-gray-900 font-normal line-clamp-2 mt-2 px-3">{truncate(stripHtml(note.content), 50)}</p>
+                <p className="text-sm text-[#CBD5E1] font-normal line-clamp-2 mt-2 px-3">{truncate(stripHtml(note.content), 50)}</p>
 
                 <div className="flex items-center justify-between px-3 mt-1">
                   <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
@@ -138,14 +138,14 @@ const TrashNote = ({ notes, onDelete, onSelectNote, onRestore, isLoading, error,
                     {daysLeft === 0 ? 'Deleting soon' : `Deletes in ${daysLeft} day${daysLeft === 1 ? '' : 's'}`}
                   </span>
 
-                  <p className="text-xs text-gray-900 font-bold">
+                  <p className="text-xs text-[#CBD5E1] font-bold">
                     {formatDate(note.updated_at)}
                   </p>
                 </div>
 
                 {/* show menu */}
                 {activeMenu === note.id && (
-                  <div ref={menuRef} className='bg-[#415A77] rounded-lg shadow-[0_4px_14px_rgba(0,0,0,0.25)] text-[#1A1B25] absolute top-12 lg:left-73 right-6 w-43 z-50 flex flex-col'>
+                  <div ref={menuRef} className='bg-[#415A77] rounded-lg shadow-[0_4px_14px_rgba(0,0,0,0.25)] text-[#CBD5E1] absolute top-12 lg:left-73 right-6 w-43 z-50 flex flex-col'>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();

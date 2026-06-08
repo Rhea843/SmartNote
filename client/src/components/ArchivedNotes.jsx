@@ -43,7 +43,7 @@ const ArchivedNotes = ({ notes, moveToTrash, onSelectNote, onUnarchive, isLoadin
   return (
    <div className="h-screen bg-[#415A77] relative flex flex-col">
 
-    <div className='flex items-center gap-1 p-3 mt-2 lg:hidden'>
+    <div className='flex items-center gap-1 p-3 mt-2 text-[#CBD5E1] lg:hidden'>
       <button
       onClick={() => {
         onBack();
@@ -66,8 +66,8 @@ const ArchivedNotes = ({ notes, moveToTrash, onSelectNote, onUnarchive, isLoadin
       </div>
       
       {/* header */}
-      <div className='p-2 border-b border-gray-400'>
-        <h1 className='font-semibold text-center text-lg tracking-wider'>ARCHIVED NOTES</h1>
+      <div className='p-2 border-b border-gray-500'>
+        <h1 className='font-semibold text-center text-lg tracking-wider text-[#E2E8F0]'>ARCHIVED NOTES</h1>
       </div>
         
      {/* archived notes */}
@@ -103,27 +103,27 @@ const ArchivedNotes = ({ notes, moveToTrash, onSelectNote, onUnarchive, isLoadin
                 onSelectNote(note)
                 setActiveMenu(null)
               }}
-              className="w-full border-b border-gray-400 py-4 text-[#1A1B25] relative"
+              className="w-full border-b border-gray-500 py-4 text-[#1A1B25] relative"
             >
               <div className="flex item-center justify-between px-3 ">
-              <h3 className="font-semibold text-lg ">{truncate(note.title, 20)}</h3>
+              <h3 className="font-semibold text-lg text-[#E2E8F0] ">{truncate(note.title, 20)}</h3>
               <button onClick={(e) =>{
                 e.stopPropagation();
                 setActiveMenu(activeMenu === note.id ? null : note.id);
               }}>
-                <IoMdMore  className="text-3xl"/>
+                <IoMdMore  className="text-3xl text-[#CBD5E1]"/>
               </button>
               
               </div>
-            <p className="text-sm text-gray-900 font-normal line-clamp-2 mt-2 px-3 ">{truncate(stripHtml(note.content), 50)}</p>
+            <p className="text-sm text-[#CBD5E1] font-normal line-clamp-2 mt-2 px-3 ">{truncate(stripHtml(note.content), 50)}</p>
 
-            <p className="text-xs text-gray-900 pr-2 font-bold text-right">
+            <p className="text-xs text-[#CBD5E1] pr-2 font-bold text-right">
               {formatDate(note.updated_at)}
             </p>
 
             {/* show menu */}
             {activeMenu === note.id && (
-              <div ref={menuRef} className='bg-[#415A77] rounded-lg shadow-[0_4px_14px_rgba(0,0,0,0.25)] text-[#1A1B25] absolute top-12 lg:left-73 right-6 w-43 z-50 flex flex-col'>
+              <div ref={menuRef} className='bg-[#415A77] rounded-lg shadow-[0_4px_14px_rgba(0,0,0,0.25)] text-[#CBD5E1] absolute top-12 lg:left-73 right-6 w-43 z-50 flex flex-col'>
 
                 <button
                   onClick={(e) => {

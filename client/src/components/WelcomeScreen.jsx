@@ -49,7 +49,7 @@ const archivedCount = notes.filter(
         <div>
           <button
             onClick={onNewNote}
-             className="flex items-center gap-2 bg-[#3A506A] text-white py-3 px-6 rounded-md hover:bg-[#254160] transition w-40" 
+             className="flex items-center gap-2 bg-[#3A506A] text-white py-3 px-6 rounded-md hover:bg-[#1E2533] transition w-40" 
           >
            Add new note
           </button>

@@ -50,7 +50,7 @@ const NoteList = ({ notes, moveToTrash, onSelectNote, onTogglePin, onToggleArchi
   return (
     <div className="h-screen bg-[#415A77] relative flex flex-col">
 
-      <div className='flex items-center gap-1 p-3 mt-2 lg:hidden'>
+      <div className='flex items-center gap-1 p-3 mt-2 text-[#CBD5E1] lg:hidden '>
         <button
         onClick={() => {
           onBack();
@@ -74,8 +74,8 @@ const NoteList = ({ notes, moveToTrash, onSelectNote, onTogglePin, onToggleArchi
       </div>
 
      {/* header */}
-      <div className='p-2 border-b border-gray-400'>
-        <h1 className='font-bold text-center text-lg tracking-wider '>ALL NOTES</h1>
+      <div className='p-2 border-b border-gray-500'>
+        <h1 className='font-bold text-center text-xl tracking-wide text-[#E2E8F0] '>ALL NOTES</h1>
       </div>
       
       {/* note list */}
@@ -103,11 +103,11 @@ const NoteList = ({ notes, moveToTrash, onSelectNote, onTogglePin, onToggleArchi
             </div>
             
           ) : notes.length === 0 ? (
-            <p className="text-center text-gray-400 mt-12">
+            <p className="text-center text-[#94A3B8] mt-12">
               No notes yet. Create your first note!
             </p>
           ) : filteredNotes.length === 0 ? (
-            <p className="text-center text-gray-400 mt-12">
+            <p className="text-center text-[#94A3B8] mt-12">
               No Notes match your search.
             </p>
           ) : (
@@ -119,27 +119,27 @@ const NoteList = ({ notes, moveToTrash, onSelectNote, onTogglePin, onToggleArchi
                 onSelectNote(note)
                 setActiveMenu(null)
               }}
-              className="w-full border-b border-gray-400 py-4 text-[#1A1B25] relative"
+              className="w-full border-b border-gray-500 py-4 relative"
             >
               {/* title and menu */}
               <div className="flex item-center justify-between px-3 ">
-               <h3 className="font-semibold text-lg ">{truncate(note.title, 20)}</h3>
+               <h3 className="font-semibold text-xl text-[#E2E8F0]">{truncate(note.title, 20)}</h3>
                <button onClick={(e) =>{
                  e.stopPropagation();
                  setActiveMenu(activeMenu === note.id ? null : note.id);
                }}>
-                <IoMdMore  className="text-3xl"/>
+                <IoMdMore  className="text-3xl text-[#CBD5E1]"/>
                </button>
                
               </div>
               {/* content */}
-             <p className="text-sm text-gray-900 font-normal line-clamp-2 mt-2 px-3 ">{truncate(stripHtml(note.content), 50)}</p>
+             <p className="text-sm text-[#CBD5E1] font-normal line-clamp-2 mt-2 px-3 ">{truncate(stripHtml(note.content), 50)}</p>
              {note.tags && note.tags.length > 0 && (
                 <div className="flex flex-wrap gap-1 px-3 mt-2">
                   {note.tags.map(tag => (
                     <div
                       key={tag.id}
-                      className='bg-[#1B263B] text-[#fafafa] text-xs px-3 py-2 rounded-md mt-3'
+                      className='bg-[#1B263B] text-[#CBD5E1] text-xs px-3 py-2 rounded-md mt-3'
                     >
                       <span className='flex items-center gap-1'>
                         <IoPricetagsOutline />
@@ -153,8 +153,8 @@ const NoteList = ({ notes, moveToTrash, onSelectNote, onTogglePin, onToggleArchi
               {/* footer */}
               {note.is_pinned && (
                 <div className="flex items-center justify-between px-3 mt-6">
-                  <BsFillPinFill  size={20} className="text-sm "/>
-                  <p className="text-xs text-gray-900 pr-2 font-bold text-right">
+                  <BsFillPinFill  size={20} className="text-sm text-[#CBD5E1] "/>
+                  <p className="text-xs text-[#CBD5E1] pr-2 font-bold text-right">
                     {formatDate(note.updated_at)}
                   </p>
                 </div>
@@ -162,7 +162,7 @@ const NoteList = ({ notes, moveToTrash, onSelectNote, onTogglePin, onToggleArchi
 
               <div className='px-3 mt-3'>
                 {!note.is_pinned && (
-                  <p className="text-xs text-gray-900 pr-2 font-bold text-right">
+                  <p className="text-xs text-[#E2E8F0] pr-2 font-bold text-right">
                    {formatDate(note.updated_at)}
                  </p>
                 )}
@@ -171,7 +171,7 @@ const NoteList = ({ notes, moveToTrash, onSelectNote, onTogglePin, onToggleArchi
 
              {/* show menu */}
               {activeMenu === note.id && (
-                <div ref={menuRef} className='bg-[#415A77] rounded-lg shadow-[0_4px_14px_rgba(0,0,0,0.25)] text-[#1A1B25] absolute top-12 lg:left-72 right-6 w-43 z-50 flex flex-col'>
+                <div ref={menuRef} className='bg-[#415A77] rounded-lg shadow-[0_4px_14px_rgba(0,0,0,0.25)] text-[#CBD5E1] absolute top-12 lg:left-72 right-6 w-43 z-50 flex flex-col'>
                   <button
                    onClick={(e) => {
                     e.stopPropagation();
@@ -249,7 +249,7 @@ const NoteList = ({ notes, moveToTrash, onSelectNote, onTogglePin, onToggleArchi
               setShowTooltip(false);
               onSelectNote(null);
             }}
-            className="bg-[#fafafa] p-4 rounded-full"
+            className="bg-[#1E2533] text-[#E2E8F0] p-4 rounded-full"
           >
            <TiPlus />
           </button>

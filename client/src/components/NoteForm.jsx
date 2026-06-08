@@ -156,7 +156,7 @@ const NoteForm = ({ selectedNote, onCreate, onUpdate, moveToTrash, onDelete, onC
 
       <button
         onClick={(e) => { e.stopPropagation(); setActiveMenu(activeMenu === 'form' ? null : 'form') }}
-        className='absolute top-4 lg:right-10 right-6 bg-[#3A506A] p-2 rounded-full w-10 h-10 flex items-center justify-center'
+        className='absolute top-4 lg:right-10 right-6 bg-[#3A506A] text-[#E2E8F0] p-2 rounded-full w-10 h-10 flex items-center justify-center'
       >
         <MdMoreHoriz className="text-2xl" />
       </button>
@@ -211,11 +211,7 @@ const NoteForm = ({ selectedNote, onCreate, onUpdate, moveToTrash, onDelete, onC
           <button
             data-no-close="true"
             onMouseDown={(e) => { e.stopPropagation(); setShowToolbar(prev => !prev); }}
-            className={`absolute bottom-4 right-6 p-4 rounded-full shadow-md transition-colors ${
-              showToolbar 
-                ? 'bg-[#1B263B] text-white' 
-                : 'bg-[#3A506A]/30 text-black hover:bg-[#3A506A]/50'
-            }`}
+            className=' absolute bottom-4 right-6 p-4 rounded-full shadow-md transition-colors bg-[#3A506A] text-[#E2E8F0]' 
           >
             <IoMdArrowDropdown className={`text-xl transition-transform duration-200 ${showToolbar ? 'rotate-180' : 'rotate-0'}`} />
          </button>
@@ -236,12 +232,12 @@ const NoteForm = ({ selectedNote, onCreate, onUpdate, moveToTrash, onDelete, onC
                 <IoPricetagsOutline />{tag.name}
               </button>
             );
-          }) : <p className='text-xs text-gray-300'>No tags yet.</p>}
+          }) : <p className='text-xs text-[#CBD5E1]'>No tags yet.</p>}
         </div>
       )}
 
       {activeMenu === 'form' && (
-        <div ref={moreMenuRef} className='bg-[#415A77] rounded-lg shadow-[0_4px_14px_rgba(0,0,0,0.25)] absolute top-15 lg:right-15 right-9 w-48 z-50 flex flex-col'>
+        <div ref={moreMenuRef} className='bg-[#415A77] text-[#CBD5E1] rounded-lg shadow-[0_4px_14px_rgba(0,0,0,0.25)] absolute top-15 lg:right-15 right-9 w-48 z-50 flex flex-col'>
           <button
             onClick={(e) => { e.stopPropagation(); if (selectedNote) onTogglePin(selectedNote.id); onClose(); setActiveMenu(null); }}
             className='flex items-center gap-2 px-3 py-3 border-b border-gray-500 w-full'

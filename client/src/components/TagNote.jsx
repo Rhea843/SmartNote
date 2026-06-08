@@ -54,7 +54,7 @@ const TagsPage = ({ notes, allTags, onSelectNote, onCreateTag, onBack }) => {
 
          {/* header */}
 
-          <div className='flex items-center gap-1 px-3 mt-6 lg:hidden'>
+          <div className='flex items-center gap-1 px-3 mt-6 text-[#CBD5E1] lg:hidden'>
             <button
             onClick={() => {
              onBack();
@@ -65,7 +65,7 @@ const TagsPage = ({ notes, allTags, onSelectNote, onCreateTag, onBack }) => {
             <span className='font-semibold text-sm'>Back</span>
           </div>
 
-          <h1 className='font-semibold text-center text-2xl tracking-wider px-4 pt-2 mb-2'>TAGS</h1>
+          <h1 className='font-semibold text-center text-2xl tracking-wider px-4 pt-2 mb-2 text-[#E2E8F0] '>TAGS</h1>
 
           {/* create tag input */}
           <div className="relative px-4 pb-2 shrink-0 flex gap-2">
@@ -78,7 +78,7 @@ const TagsPage = ({ notes, allTags, onSelectNote, onCreateTag, onBack }) => {
               className="bg-[#fafafa] w-full rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-[14px]"
             />
 
-            <button onClick={handleButtonCreate} className="bg-[#1B263B] border border-black text-white text-sm px-4 py-2 rounded-lg shrink-0 hover:bg-[#0D1B2A] transition-colors">
+            <button onClick={handleButtonCreate} className="bg-[#1B263B] text-white text-sm px-4 py-2 rounded-md shrink-0 hover:bg-[#0D1B2A] transition-colors">
               Add Tag
             </button>
           </div>
@@ -90,7 +90,7 @@ const TagsPage = ({ notes, allTags, onSelectNote, onCreateTag, onBack }) => {
                 <button
                   key={tag.id}
                   onClick={() => setSelectedTag(tag)}
-                  className='flex items-center gap-2 w-full px-3 py-4 border-b border-gray-400 text-[#1A1B25]'
+                  className='flex items-center gap-2 w-full px-3 py-4 border-b border-gray-400 text-[#CBD5E1]'
                 >
                   <IoPricetagsOutline className='text-xl' />
                   <span className='font-semibold'>{tag.name}</span>
@@ -100,7 +100,7 @@ const TagsPage = ({ notes, allTags, onSelectNote, onCreateTag, onBack }) => {
                 </button>
               ))
             ) : (
-              <p className='text-center text-gray-400 mt-12'>No tags yet. Create one above.</p>
+              <p className='text-center text-[#94A3B8] mt-12'>No tags yet. Create one above.</p>
             )}
           </div>
         </>
@@ -110,7 +110,7 @@ const TagsPage = ({ notes, allTags, onSelectNote, onCreateTag, onBack }) => {
       {selectedTag && (
         <div className='overflow-y-auto flex-1'>
           
-          <div className='flex items-center gap-2 p-3 mt-2'>
+          <div className='flex items-center gap-2 text-[#CBD5E1] p-3 mt-2'>
             <button
             onClick={() => {
              setSelectedTag(null);
@@ -123,7 +123,7 @@ const TagsPage = ({ notes, allTags, onSelectNote, onCreateTag, onBack }) => {
           </div>
 
           <div>
-            <h1 className='font-semibold text-lg text-center'>{selectedTag.name.toUpperCase()} TAG</h1>
+            <h1 className='font-semibold text-lg text-center text-[#E2E8F0]'>{selectedTag.name.toUpperCase()} TAG</h1>
           </div>
           
 
@@ -145,14 +145,14 @@ const TagsPage = ({ notes, allTags, onSelectNote, onCreateTag, onBack }) => {
               <div
                 key={note.id}
                 onClick={() => onSelectNote(note)}
-                className='w-full border-b border-gray-400 py-4 px-3 text-[#1A1B25] cursor-pointer'
+                className='w-full border-b border-gray-500 py-4 px-3  cursor-pointer'
               >
-                <h3 className='font-semibold text-lg'>{(truncate(note.title, 20)) || 'Untitled'}</h3>
-                <p className='text-sm text-gray-900 mt-1 line-clamp-2'>{truncate(stripHtml(note.content), 50) || 'No content'}</p>
+                <h3 className='font-semibold text-lg text-[#E2E8F0]'>{(truncate(note.title, 20)) || 'Untitled'}</h3>
+                <p className='text-sm text-[#CBD5E1] mt-1 line-clamp-2'>{truncate(stripHtml(note.content), 50) || 'No content'}</p>
               </div>
             ))
           ) : (
-            <p className='text-center text-gray-400 mt-12'>{searchQuery ? 'No notes match your search.' : 'No notes with this tag.'}</p>
+            <p className='text-center text-[#94A3B8] mt-12'>{searchQuery ? 'No notes match your search.' : 'No notes with this tag.'}</p>
           )}
         </div>
       )}
