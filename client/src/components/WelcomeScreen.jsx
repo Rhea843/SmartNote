@@ -126,7 +126,7 @@ const archivedCount = notes.filter(
           </div>
            
           <div className="flex flex-col items-center gap-1">
-            <p className="text-sm font-bold text-[#1A1B25]">{recentNotes}</p>
+            <p className="text-xl font-bold text-[#1A1B25]">{recentNotes}</p>
             <p className="text-sm text-gray-400 font-medium"> Recent Notes<br /> (7 days)</p>
           </div>
         </button>
@@ -139,7 +139,7 @@ const archivedCount = notes.filter(
             <MdPushPin className="text-xl text-[#2d5be3]" />
           </div>
           <div className="flex flex-col items-center gap-1">
-            <p className="text-sm font-bold text-[#1A1B25]">{pinnedCount}</p>
+            <p className="text-xl font-bold text-[#1A1B25]">{pinnedCount}</p>
             <p className="text-sm text-gray-400 font-medium"> Pinned Notes</p>
           </div>
         </button>

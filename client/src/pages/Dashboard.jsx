@@ -404,7 +404,8 @@ const createTag = async (name) => {
                   selectedNote={notes.find(n => n.id === selectedNote?.id) || selectedNote}  
                   onCreate={createNote}
                   onUpdate={updateNote}
-                  onDelete={moveToTrash}
+                  onDelete={deleteNote}
+                  onTogglePin={togglePin}
                   onToggleArchive={toggleArchive}
                   moveToTrash={moveToTrash}
                   onAddTag={addTagToNote}

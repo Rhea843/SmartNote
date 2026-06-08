@@ -9,14 +9,17 @@ import { MdOutlineDelete } from "react-icons/md";
 import { IoArrowBack } from "react-icons/io5";
 import { FiArchive } from "react-icons/fi";
 import { MdOutlinePushPin } from "react-icons/md";
+import { IoMdArrowDropdown } from "react-icons/io";
 import Toolbar from './Toolbar'
 import useClickOutside from '../hooks/useClickOutside';
 
-const NoteForm = ({ selectedNote, onCreate, onUpdate, moveToTrash, onClose, onAddTag, onRemoveTag, allTags, onTogglePin, onToggleArchive }) => {
+const NoteForm = ({ selectedNote, onCreate, onUpdate, moveToTrash, onDelete, onClose, onAddTag, onRemoveTag, allTags, onTogglePin, onToggleArchive }) => {
   const [title, setTitle] = useState(selectedNote?.title || '')
   const [activeMenu, setActiveMenu] = useState(null);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [showTagPanel, setShowTagPanel] = useState(false);
+  const [showToolbar, setShowToolbar] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
 
   const formRef = useRef(null)
   const titleRef = useRef(title);
@@ -29,6 +32,10 @@ const NoteForm = ({ selectedNote, onCreate, onUpdate, moveToTrash, onClose, onAd
   const tagPanelRef = useRef(null);
   const closeTagPanel = useCallback(() => setShowTagPanel(false), []);
   useClickOutside(tagPanelRef, closeTagPanel);
+
+  const toolbarRef = useRef(null);
+  const closeToolbar = useCallback(() => setShowToolbar(false), []);
+  useClickOutside(toolbarRef, closeToolbar);
 
   const editor = useEditor({
     extensions: [
@@ -66,63 +73,72 @@ const NoteForm = ({ selectedNote, onCreate, onUpdate, moveToTrash, onClose, onAd
 
  
   useEffect(() => {
-  const interval = setInterval(async () => {
-    if (!isDirtyRef.current) return;
+    const interval = setInterval(async () => {
+      if (!isDirtyRef.current) return;
 
-    const latestTitle = titleRef.current;
-    const latestContent = editor?.getHTML() ?? '';
+      const latestTitle = titleRef.current;
+      const latestContent = editor?.getHTML() ?? '';
 
-    try {
-      if (selectedNote) {
-        await onUpdate(
-          selectedNote.id,
-          latestTitle,
-          latestContent
-        );
-      } else {
+    
+      try {
         if (latestTitle || latestContent !== '<p></p>') {
-          await onCreate(
-            latestTitle,
-            latestContent
-          );
+          if (selectedNote) {
+            await onUpdate(selectedNote.id, latestTitle, latestContent);
+          } else {
+            await onCreate(latestTitle, latestContent);
+          }
         }
+
+        isDirtyRef.current = false;
+      } catch (error) {
+        console.error(error);
       }
+    }, 3000);
 
-      isDirtyRef.current = false;
-    } catch (error) {
-      console.error(error);
-    }
-  }, 3000);
-
-  return () => clearInterval(interval);
-}, [selectedNote, onCreate, onUpdate, editor]);
+    return () => clearInterval(interval);
+  }, [selectedNote, onCreate, onUpdate, editor]);
 
 
   // Save on unmount if still dirty
   useEffect(() => {
-    return () => {
-      if (!isDirtyRef.current) return;
-      const latestTitle = titleRef.current;
-      const latestContent = editor?.getHTML() ?? '';
+  return () => {
+    const latestTitle = titleRef.current;
+    const latestContent = editor?.getHTML() ?? '';
+
+    if (!latestTitle && latestContent === '<p></p>') {
       if (selectedNote) {
-        onUpdate(selectedNote.id, latestTitle, latestContent);
-      } else if (latestTitle || latestContent !== '<p></p>') {
-        onCreate(latestTitle, latestContent);
+        onDelete(selectedNote.id);
       }
-    };
-  }, []);
+      return;
+    }
+
+    if (!isDirtyRef.current) return;
+    if (selectedNote) {
+      onUpdate(selectedNote.id, latestTitle, latestContent);
+    } else if (latestTitle || latestContent !== '<p></p>') {
+      onCreate(latestTitle, latestContent);
+    }
+  };
+}, []);
 
   // Click outside → close (saving is handled by autosave)
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (event.target.closest('[data-no-close]')) return;
-      if (formRef.current && !formRef.current.contains(event.target)) {
-        onClose();
+  const handleClickOutside = (event) => {
+    if (event.target.closest('[data-no-close]')) return;
+    if (formRef.current && !formRef.current.contains(event.target)) {
+      const latestTitle = titleRef.current;
+      const latestContent = editor?.getHTML() ?? '';
+
+      if (selectedNote && !latestTitle && latestContent === '<p></p>') {
+        onDelete(selectedNote.id);
       }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [onClose]);
+
+      onClose();
+    }
+  };
+  document.addEventListener('mousedown', handleClickOutside);
+  return () => document.removeEventListener('mousedown', handleClickOutside);
+}, [onClose, editor, selectedNote, onDelete]);
 
   // Clock
   useEffect(() => {
@@ -174,9 +190,36 @@ const NoteForm = ({ selectedNote, onCreate, onUpdate, moveToTrash, onClose, onAd
         />
       </div>
 
-      <div className='mt-4 flex flex-col flex-1'>
-        <Toolbar editor={editor} />
+      <div className='mt-4 flex flex-col flex-1 relative'>
         <EditorContent editor={editor} className="flex-1 overflow-y-auto" />
+
+        {/* Floating toolbar */}
+        {showToolbar && (
+          <div
+            ref={toolbarRef}
+            data-no-close="true"
+            className='absolute bottom-20 right-60  translate-x-1/2 bg-[#fafafa] rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.3)] z-50 w-110'
+          >
+            <Toolbar editor={editor} />
+          </div>
+        )}
+
+        {/* Toolbar toggle button at bottom */}
+        <div
+          className='flex justify-center py-2'
+        >
+          <button
+            data-no-close="true"
+            onMouseDown={(e) => { e.stopPropagation(); setShowToolbar(prev => !prev); }}
+            className={`absolute bottom-4 right-6 p-4 rounded-full shadow-md transition-colors ${
+              showToolbar 
+                ? 'bg-[#1B263B] text-white' 
+                : 'bg-[#3A506A]/30 text-black hover:bg-[#3A506A]/50'
+            }`}
+          >
+            <IoMdArrowDropdown className={`text-xl transition-transform duration-200 ${showToolbar ? 'rotate-180' : 'rotate-0'}`} />
+         </button>
+        </div>
       </div>
 
       {showTagPanel && selectedNote && (

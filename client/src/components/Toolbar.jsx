@@ -22,7 +22,7 @@ const Toolbar = ({ editor }) => {
   );
 
   return (
-    <div className="flex flex-wrap justify-center items-center gap-0.5 px-4 py-2 border-b border-[#3A506A]">
+    <div className="flex flex-wrap justify-center items-center gap-0.5 px-4 py-2">
       {btn(() => editor.chain().focus().toggleBold().run(),        editor.isActive('bold'),       <MdFormatBold size={18}/>,        'Bold')}
       {btn(() => editor.chain().focus().toggleItalic().run(),      editor.isActive('italic'),     <MdFormatItalic size={18}/>,      'Italic')}
       {btn(() => editor.chain().focus().toggleUnderline().run(),   editor.isActive('underline'),  <MdFormatUnderlined size={18}/>,  'Underline')}
